@@ -1,0 +1,10 @@
+yfinance>=0.2.31
+pandas>=2.0.0
+numpy>=1.24.0
+pytz>=2023.3
+beautifulsoup4>=4.12.0
+requests>=2.31.0
+nltk>=3.8.1
+textblob>=0.17.1
+polygon-api-client>=1.12.0
+python-dotenv>=1.0.0
