@@ -1,12 +1,12 @@
 {
-    "available_balance": 976.0582475002884,
+    "available_balance": 11.173570000297332,
     "portfolio": {
         "AI.PA": {
-            "quantity": 1041,
+            "quantity": 669,
             "avg_buy_price": 155.45999999999998
         },
         "BNP.PA": {
-            "quantity": 2803,
+            "quantity": 6,
             "avg_buy_price": 55.769999999999996
         },
         "EN.PA": {
@@ -14,36 +14,36 @@
             "avg_buy_price": 27.95
         },
         "CAP.PA": {
-            "quantity": 1034,
+            "quantity": 721,
             "avg_buy_price": 151.25
         },
         "DSY.PA": {
-            "quantity": 4771,
+            "quantity": 3232,
             "avg_buy_price": 32.51
         },
         "ENGI.PA": {
-            "quantity": 10049,
-            "avg_buy_price": 15.015000000000002
+            "quantity": 6309,
+            "avg_buy_price": 15.06976699952449
         },
         "EL.PA": {
-            "quantity": 676,
-            "avg_buy_price": 229.29999999999998
+            "quantity": 1263,
+            "avg_buy_price": 229.48590657165477
         },
         "KER.PA": {
             "quantity": 699,
             "avg_buy_price": 221.05
         },
         "OR.PA": {
-            "quantity": 464,
+            "quantity": 120,
             "avg_buy_price": 331.35
         },
         "MC.PA": {
-            "quantity": 258,
+            "quantity": 194,
             "avg_buy_price": 588.2
         },
         "ML.PA": {
-            "quantity": 4973,
-            "avg_buy_price": 30.930000000000003
+            "quantity": 3050,
+            "avg_buy_price": 30.86468852459016
         },
         "ORA.PA": {
             "quantity": 15238,
@@ -54,16 +54,16 @@
             "avg_buy_price": 106.15
         },
         "SGO.PA": {
-            "quantity": 1672,
+            "quantity": 1130,
             "avg_buy_price": 86.08000000000001
         },
         "SU.PA": {
-            "quantity": 630,
+            "quantity": 410,
             "avg_buy_price": 239.45
         },
         "TEP.PA": {
-            "quantity": 1682,
-            "avg_buy_price": 89.32
+            "quantity": 2364,
+            "avg_buy_price": 89.1757529610829
         },
         "VIE.PA": {
             "quantity": 5466,
@@ -82,11 +82,11 @@
             "avg_buy_price": 6.542
         },
         "ASML.AS": {
-            "quantity": 230,
+            "quantity": 170,
             "avg_buy_price": 647.8
         },
         "RAND.AS": {
-            "quantity": 3590,
+            "quantity": 2640,
             "avg_buy_price": 41.71
         },
         "UNA.AS": {
@@ -106,7 +106,7 @@
             "avg_buy_price": 67.78
         },
         "UCB.BR": {
-            "quantity": 422,
+            "quantity": 99,
             "avg_buy_price": 182.05
         },
         "ABI.BR": {
@@ -120,7 +120,7 @@
     },
     "short_positions": {
         "AIR.PA": {
-            "quantity": 1600,
+            "quantity": 123,
             "avg_short_price": 144.7
         },
         "ALO.PA": {
@@ -128,7 +128,7 @@
             "avg_short_price": 20.94
         },
         "ATO.PA": {
-            "quantity": 91535,
+            "quantity": 57613,
             "avg_short_price": 1.4984999999999997
         },
         "CS.PA": {
@@ -148,11 +148,11 @@
             "avg_short_price": 102.59999999999998
         },
         "SAN.PA": {
-            "quantity": 1656,
-            "avg_short_price": 92.18
+            "quantity": 2296,
+            "avg_short_price": 92.20787456445994
         },
         "HO.PA": {
-            "quantity": 1062,
+            "quantity": 37,
             "avg_short_price": 142.25
         },
         "HEIA.AS": {
@@ -162,6 +162,38 @@
         "SOLB.BR": {
             "quantity": 4612,
             "avg_short_price": 32.06000000000001
+        },
+        "MC.PA": {
+            "quantity": 225,
+            "avg_short_price": 589.3
+        },
+        "ORA.PA": {
+            "quantity": 13236,
+            "avg_short_price": 10.119999999999997
+        },
+        "RI.PA": {
+            "quantity": 1247,
+            "avg_short_price": 106.15000000000002
+        },
+        "RNO.PA": {
+            "quantity": 3296,
+            "avg_short_price": 39.79
+        },
+        "AI.PA": {
+            "quantity": 427,
+            "avg_short_price": 156.14
+        },
+        "UNA.AS": {
+            "quantity": 1043,
+            "avg_short_price": 56.74
+        },
+        "INGA.AS": {
+            "quantity": 4137,
+            "avg_short_price": 14.61
+        },
+        "PROX.BR": {
+            "quantity": 9743,
+            "avg_short_price": 6.105
         }
     },
     "trade_history": [
@@ -650,6 +682,231 @@
             "price": 14.552,
             "value": 71464.872,
             "fee": 178.66218
+        },
+        {
+            "timestamp": "2024-11-28T15:47:28.028475",
+            "symbol": "BNP.PA",
+            "type": "sell",
+            "quantity": 986,
+            "price": 56.12,
+            "value": 55334.32,
+            "fee": 138.3358,
+            "profit_loss": 206.76420000000138
+        },
+        {
+            "timestamp": "2024-11-28T15:47:31.797230",
+            "symbol": "ENGI.PA",
+            "type": "sell",
+            "quantity": 4011,
+            "price": 15.075,
+            "value": 60465.825,
+            "fee": 151.1645625,
+            "profit_loss": 89.49543749998776
+        },
+        {
+            "timestamp": "2024-11-28T15:47:32.104593",
+            "symbol": "EL.PA",
+            "type": "buy",
+            "quantity": 302,
+            "price": 229.7,
+            "value": 69369.4,
+            "fee": 173.4235
+        },
+        {
+            "timestamp": "2024-11-28T15:47:33.259333",
+            "symbol": "OR.PA",
+            "type": "sell",
+            "quantity": 177,
+            "price": 331.55,
+            "value": 58684.35,
+            "fee": 146.710875,
+            "profit_loss": -111.310875000002
+        },
+        {
+            "timestamp": "2024-11-28T15:47:35.750652",
+            "symbol": "ML.PA",
+            "type": "sell",
+            "quantity": 2012,
+            "price": 30.98,
+            "value": 62331.76,
+            "fee": 155.82940000000002,
+            "profit_loss": -55.22940000000574
+        },
+        {
+            "timestamp": "2024-11-28T15:47:50.709932",
+            "symbol": "UCB.BR",
+            "type": "sell",
+            "quantity": 323,
+            "price": 181.25,
+            "value": 58543.75,
+            "fee": 146.359375,
+            "profit_loss": -404.7593750000037
+        },
+        {
+            "timestamp": "2024-11-28T15:48:26.356880",
+            "symbol": "BNP.PA",
+            "type": "sell",
+            "quantity": 933,
+            "price": 56.12,
+            "value": 52359.96,
+            "fee": 130.8999,
+            "profit_loss": 195.65010000000132
+        },
+        {
+            "timestamp": "2024-11-28T15:48:26.633311",
+            "symbol": "ENGI.PA",
+            "type": "sell",
+            "quantity": 3794,
+            "price": 15.075,
+            "value": 57194.549999999996,
+            "fee": 142.98637499999998,
+            "profit_loss": 84.65362499998844
+        },
+        {
+            "timestamp": "2024-11-28T15:48:26.672472",
+            "symbol": "EL.PA",
+            "type": "buy",
+            "quantity": 285,
+            "price": 229.7,
+            "value": 65464.5,
+            "fee": 163.66125
+        },
+        {
+            "timestamp": "2024-11-28T15:48:26.830984",
+            "symbol": "OR.PA",
+            "type": "sell",
+            "quantity": 167,
+            "price": 331.55,
+            "value": 55368.85,
+            "fee": 138.422125,
+            "profit_loss": -105.02212500000189
+        },
+        {
+            "timestamp": "2024-11-28T15:48:28.940491",
+            "symbol": "ML.PA",
+            "type": "sell",
+            "quantity": 1903,
+            "price": 30.98,
+            "value": 58954.94,
+            "fee": 147.38735,
+            "profit_loss": -52.23735000000541
+        },
+        {
+            "timestamp": "2024-11-28T15:54:00.930262",
+            "symbol": "BNP.PA",
+            "type": "sell",
+            "quantity": 878,
+            "price": 56.12,
+            "value": 49273.36,
+            "fee": 123.1834,
+            "profit_loss": 184.11660000000126
+        },
+        {
+            "timestamp": "2024-11-28T17:11:05.611245",
+            "symbol": "AI.PA",
+            "type": "sell",
+            "quantity": 372,
+            "price": 156.22,
+            "value": 58113.84,
+            "fee": 145.28459999999998,
+            "profit_loss": 137.4354000000072
+        },
+        {
+            "timestamp": "2024-11-28T17:11:09.382165",
+            "symbol": "CAP.PA",
+            "type": "sell",
+            "quantity": 313,
+            "price": 151.5,
+            "value": 47419.5,
+            "fee": 118.54875,
+            "profit_loss": -40.29875
+        },
+        {
+            "timestamp": "2024-11-28T17:11:10.394952",
+            "symbol": "DSY.PA",
+            "type": "sell",
+            "quantity": 1539,
+            "price": 32.57,
+            "value": 50125.23,
+            "fee": 125.31307500000001,
+            "profit_loss": -32.97307499999651
+        },
+        {
+            "timestamp": "2024-11-28T17:11:10.602318",
+            "symbol": "ENGI.PA",
+            "type": "buy",
+            "quantity": 4065,
+            "price": 15.1,
+            "value": 61381.5,
+            "fee": 153.45375
+        },
+        {
+            "timestamp": "2024-11-28T17:11:11.860264",
+            "symbol": "MC.PA",
+            "type": "sell",
+            "quantity": 64,
+            "price": 586.4,
+            "value": 37529.6,
+            "fee": 93.824,
+            "profit_loss": -209.02400000000438
+        },
+        {
+            "timestamp": "2024-11-28T17:11:12.085099",
+            "symbol": "ML.PA",
+            "type": "buy",
+            "quantity": 1992,
+            "price": 30.83,
+            "value": 61413.35999999999,
+            "fee": 153.5334
+        },
+        {
+            "timestamp": "2024-11-28T17:11:13.554057",
+            "symbol": "SGO.PA",
+            "type": "sell",
+            "quantity": 542,
+            "price": 85.94,
+            "value": 46579.479999999996,
+            "fee": 116.44869999999999,
+            "profit_loss": -192.32870000000798
+        },
+        {
+            "timestamp": "2024-11-28T17:11:16.068249",
+            "symbol": "SU.PA",
+            "type": "sell",
+            "quantity": 220,
+            "price": 239.25,
+            "value": 52635.0,
+            "fee": 131.5875,
+            "profit_loss": -175.5874999999975
+        },
+        {
+            "timestamp": "2024-11-28T17:11:16.280476",
+            "symbol": "TEP.PA",
+            "type": "buy",
+            "quantity": 682,
+            "price": 88.82,
+            "value": 60575.24,
+            "fee": 151.4381
+        },
+        {
+            "timestamp": "2024-11-28T17:11:17.619947",
+            "symbol": "ASML.AS",
+            "type": "sell",
+            "quantity": 60,
+            "price": 639.4,
+            "value": 38364.0,
+            "fee": 95.91,
+            "profit_loss": -599.9099999999986
+        },
+        {
+            "timestamp": "2024-11-28T17:11:17.877181",
+            "symbol": "RAND.AS",
+            "type": "sell",
+            "quantity": 950,
+            "price": 41.51,
+            "value": 39434.5,
+            "fee": 98.58625,
+            "profit_loss": -288.5862500000027
         }
     ]
 }
