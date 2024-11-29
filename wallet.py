@@ -30,6 +30,8 @@ class Wallet:
         self.order_size_limit = 1000000  # $1M limit per order
         self.margin_requirement = 0.5  # 50% margin requirement for short positions
         self.trade_history = []  # List to track all trades
+        self.trade_cooldown = 300  # Minimum seconds between trades (5 minutes)
+        self.last_trade_time = None  # Track the last trade timestamp
         
         # Setup logging
         if not os.path.exists('logs'):
@@ -170,6 +172,12 @@ class Wallet:
         if not symbol:
             logging.error("Invalid symbol provided")
             return False
+            
+        # Check trade limits
+        can_trade, reason = self.can_trade()
+        if not can_trade:
+            logging.error(f"Trade rejected: {reason}")
+            return False
         
         current_price = self.get_current_price(symbol)
         if not current_price:
@@ -196,6 +204,9 @@ class Wallet:
                     self.portfolio[symbol] = {'quantity': quantity, 'avg_buy_price': current_price}
                 
                 self.available_balance -= (order_value + fee)
+                
+                # Update last trade time
+                self.last_trade_time = datetime.now()
                 
                 # Record the trade
                 trade_data = {
@@ -322,27 +333,47 @@ class Wallet:
         for symbol, data in clean_portfolio.items():
             if not symbol:
                 continue
-            position_data = self.get_position_value(symbol)
-            if position_data:
+            current_price = self.get_current_price(symbol)
+            if current_price:
+                position_value = data['quantity'] * current_price
+                cost_basis = data['quantity'] * data['avg_buy_price']
+                unrealized_pl = position_value - cost_basis
+                unrealized_pl_pct = (unrealized_pl / cost_basis) * 100 if cost_basis > 0 else 0
+                
                 summary['long_positions'][symbol] = {
                     'quantity': data['quantity'],
                     'avg_buy_price': data['avg_buy_price'],
-                    **position_data
+                    'current_price': current_price,
+                    'current_value': position_value,
+                    'cost_basis': cost_basis,
+                    'unrealized_pl': unrealized_pl,
+                    'unrealized_pl_pct': unrealized_pl_pct
                 }
-                total_portfolio_value += position_data['current_value']
+                total_portfolio_value += position_value
         
         # Short positions
         for symbol, data in clean_shorts.items():
             if not symbol:
                 continue
-            position_data = self.get_position_value(symbol)
-            if position_data:
+            current_price = self.get_current_price(symbol)
+            if current_price:
+                position_value = data['quantity'] * current_price
+                cost_basis = data['quantity'] * data['avg_short_price']
+                # For shorts, profit is when current price is lower than short price
+                unrealized_pl = cost_basis - position_value
+                unrealized_pl_pct = (unrealized_pl / cost_basis) * 100 if cost_basis > 0 else 0
+                
                 summary['short_positions'][symbol] = {
                     'quantity': data['quantity'],
                     'avg_short_price': data['avg_short_price'],
-                    **position_data
+                    'current_price': current_price,
+                    'current_value': position_value,
+                    'cost_basis': cost_basis,
+                    'unrealized_pl': unrealized_pl,
+                    'unrealized_pl_pct': unrealized_pl_pct
                 }
-                total_portfolio_value += position_data['unrealized_pl']  # Add unrealized P&L from shorts
+                # For shorts, we need to consider the margin requirement and unrealized P&L
+                total_portfolio_value += (position_value * self.margin_requirement) + unrealized_pl
         
         summary['total_portfolio_value'] = total_portfolio_value
         return summary
@@ -430,6 +461,21 @@ class Wallet:
             'start_date': min(t['timestamp'] for t in filtered_trades) if filtered_trades else None,
             'end_date': max(t['timestamp'] for t in filtered_trades) if filtered_trades else None
         }
+
+    def can_trade(self):
+        """
+        Check if trading is allowed based on cooldown period
+        Returns: (bool, str) - (can trade, reason if cannot trade)
+        """
+        current_time = datetime.now()
+        
+        # Check cooldown period
+        if self.last_trade_time:
+            time_since_last_trade = (current_time - self.last_trade_time).total_seconds()
+            if time_since_last_trade < self.trade_cooldown:
+                return False, f"Cooldown period active ({int(self.trade_cooldown - time_since_last_trade)}s remaining)"
+            
+        return True, "Trading allowed"
 
     def save(self):
         """Save wallet state to file"""

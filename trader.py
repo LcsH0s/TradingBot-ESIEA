@@ -260,6 +260,44 @@ class Trader:
         if sentiment_data:
             signals['reason'].append(f"News sentiment is {sentiment_data['sentiment']} (score: {sentiment_data['sentiment_score']:.2f})")
 
+        # Check for profit taking opportunities in existing positions
+        if symbol in self.wallet.portfolio:
+            position = self.wallet.get_position_value(symbol)
+            if position:
+                profit_pct = position['unrealized_pl_pct']
+                
+                # Take profits if unrealized gain is over 15%
+                if profit_pct >= 15:
+                    signals['recommendation'] = 'sell'
+                    signals['strength'] = 0.8
+                    signals['reason'].append(f"Taking profits - Position up {profit_pct:.1f}%")
+                    logging.info(f"Generated SELL signal for {symbol} - Taking profits at {profit_pct:.1f}%")
+                    return signals
+                
+                # Start considering selling if unrealized gain is over 10% and technical indicators are bearish
+                elif profit_pct >= 10 and (macd_strength < 0 or rsi_strength < 0):
+                    signals['recommendation'] = 'sell'
+                    signals['strength'] = 0.6
+                    signals['reason'].append(f"Protecting profits - Position up {profit_pct:.1f}% with bearish indicators")
+                    logging.info(f"Generated SELL signal for {symbol} - Protecting profits at {profit_pct:.1f}%")
+                    return signals
+                
+                # If we're in profit but momentum is strongly negative, consider selling
+                elif profit_pct > 5 and (macd_strength < -0.5 and rsi_strength < -0.3):
+                    signals['recommendation'] = 'sell'
+                    signals['strength'] = 0.5
+                    signals['reason'].append(f"Momentum turning negative - Protecting {profit_pct:.1f}% profit")
+                    logging.info(f"Generated SELL signal for {symbol} - Momentum turning negative with {profit_pct:.1f}% profit")
+                    return signals
+                
+                # If we're in a loss and technical indicators are bearish, cut losses faster
+                elif profit_pct < -5 and (macd_strength < 0 or rsi_strength < 0):
+                    signals['recommendation'] = 'sell'
+                    signals['strength'] = 0.7
+                    signals['reason'].append(f"Cutting losses - Position down {abs(profit_pct):.1f}% with bearish indicators")
+                    logging.info(f"Generated SELL signal for {symbol} - Cutting losses at -{abs(profit_pct):.1f}%")
+                    return signals
+
         # Combine signals (including sentiment)
         total_strength = (rsi_strength + macd_strength + bb_strength + sentiment_strength) / 4
 
@@ -285,7 +323,7 @@ class Trader:
                 signals['recommendation'] = 'hold'
                 signals['strength'] = abs(total_strength)
                 logging.info(f"Generated HOLD signal for {symbol} (strength: {abs(total_strength):.2f})")
-
+        
         return signals
 
     def execute_trade(self, symbol):

@@ -170,7 +170,7 @@ class MarketData:
             self.logger.error(f"Error fetching data for {symbol}: {str(e)}")
             return None
 
-    def get_multiple_stocks_data(self, symbols, period="1d", interval="1m"):
+    def get_multiple_stocks_data(self, symbols, period="1d", interval="1d"):
         data = {}
         max_retries = 3
 
@@ -215,7 +215,7 @@ class MarketData:
             batch_size = 10
             for i in range(0, len(self.monitored_stocks), batch_size):
                 batch = self.monitored_stocks[i:i+batch_size]
-                data = self.get_multiple_stocks_data(batch, period="1d", interval="1m")
+                data = self.get_multiple_stocks_data(batch, period="1d", interval="1d")
 
                 failed_symbols.extend([s for s in batch if s not in data])
 
