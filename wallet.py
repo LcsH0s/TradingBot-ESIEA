@@ -1,516 +1,517 @@
-import yfinance as yf
-import pandas as pd
-from datetime import datetime, timedelta
-import time
-import logging
-import os
 import json
+import threading
+import time
+from datetime import datetime, timedelta
+import pandas as pd
+from typing import Dict, List, Literal, Optional, Tuple, Any
+from dataclasses import dataclass
+import os
+import logging
+from utils.logger import setup_logger, get_class_logger
+from utils.yahoo_client import YahooAPIClient
+import yfinance as yf
+import pickle
+from pathlib import Path
+
+@dataclass
+class Trade:
+    type: Literal["buy", "sell"]
+    ticker: str
+    quantity: float
+    price: float
+    date: str
+    status: Literal["pending", "executed", "failed", "cancelled"] = "pending"
+    execution_date: Optional[str] = None
+
+class Position:
+    def __init__(self, ticker: str, quantity: float, avg_price: float):
+        self.ticker = ticker
+        self.quantity = quantity
+        self.avg_price = avg_price
+
+class StockCache:
+    def __init__(self, cache_duration: int = 120, cache_file: str = "stock_cache.pkl"):
+        self.cache_duration = cache_duration
+        self.cache_file = cache_file
+        self.cache_lock = threading.Lock()
+        
+        # Initialize cache dictionaries
+        self.cache: Dict[str, Tuple[pd.DataFrame, float]] = {}
+        self.price_cache: Dict[str, Tuple[float, float]] = {}
+        self.news_cache: Dict[str, Tuple[List[Dict[str, Any]], float]] = {}
+        
+        # Load cache from file if it exists
+        self._load_cache()
+        
+        # Start cache cleanup thread
+        self.cleanup_thread = threading.Thread(target=self._cleanup_old_cache, daemon=True)
+        self.cleanup_thread.start()
+        
+    def _load_cache(self):
+        """Load cache from file if it exists."""
+        try:
+            if os.path.exists(self.cache_file):
+                with open(self.cache_file, 'rb') as f:
+                    cached_data = pickle.load(f)
+                    self.cache = cached_data.get('historical', {})
+                    self.price_cache = cached_data.get('price', {})
+                    self.news_cache = cached_data.get('news', {})
+                    
+                # Immediately cleanup any stale data
+                self._cleanup_cache_data()
+        except Exception as e:
+            logging.error(f"Error loading cache from file: {str(e)}")
+            # Start fresh if cache file is corrupted
+            self._save_cache()
+            
+    def _save_cache(self):
+        """Save cache to file."""
+        try:
+            with self.cache_lock:
+                cache_data = {
+                    'historical': self.cache,
+                    'price': self.price_cache,
+                    'news': self.news_cache
+                }
+                with open(self.cache_file, 'wb') as f:
+                    pickle.dump(cache_data, f)
+        except Exception as e:
+            logging.error(f"Error saving cache to file: {str(e)}")
+            
+    def _cleanup_cache_data(self):
+        """Clean up expired cache entries."""
+        current_time = time.time()
+        
+        with self.cache_lock:
+            # Cleanup historical data cache
+            expired_historical = [
+                ticker for ticker, (_, timestamp) in self.cache.items()
+                if current_time - timestamp > self.cache_duration
+            ]
+            for ticker in expired_historical:
+                del self.cache[ticker]
+                
+            # Cleanup price cache
+            expired_prices = [
+                ticker for ticker, (_, timestamp) in self.price_cache.items()
+                if current_time - timestamp > self.cache_duration
+            ]
+            for ticker in expired_prices:
+                del self.price_cache[ticker]
+                
+            # Cleanup news cache
+            expired_news = [
+                ticker for ticker, (_, timestamp) in self.news_cache.items()
+                if current_time - timestamp > self.cache_duration
+            ]
+            for ticker in expired_news:
+                del self.news_cache[ticker]
+                
+        # Save cleaned cache to file
+        if expired_historical or expired_prices or expired_news:
+            self._save_cache()
+            
+    def _cleanup_old_cache(self):
+        """Background thread to periodically clean up old cache entries."""
+        while True:
+            self._cleanup_cache_data()
+            time.sleep(30)  # Check every 30 seconds
+
+    def get_data(self, ticker: str) -> Optional[pd.DataFrame]:
+        with self.cache_lock:
+            if ticker in self.cache:
+                data, timestamp = self.cache[ticker]
+                if time.time() - timestamp < self.cache_duration:
+                    return data
+        return None
+
+    def set_data(self, ticker: str, data: pd.DataFrame):
+        with self.cache_lock:
+            self.cache[ticker] = (data, time.time())
+            self._save_cache()
+
+    def get_price(self, ticker: str) -> Optional[float]:
+        with self.cache_lock:
+            if ticker in self.price_cache:
+                price, timestamp = self.price_cache[ticker]
+                if time.time() - timestamp < self.cache_duration:
+                    return price
+        return None
+
+    def set_price(self, ticker: str, price: float):
+        with self.cache_lock:
+            self.price_cache[ticker] = (price, time.time())
+            self._save_cache()
+
+    def get_news(self, ticker: str) -> Optional[List[Dict[str, Any]]]:
+        with self.cache_lock:
+            if ticker in self.news_cache:
+                news, timestamp = self.news_cache[ticker]
+                if time.time() - timestamp < self.cache_duration:
+                    return news
+        return None
+
+    def set_news(self, ticker: str, news: List[Dict[str, Any]]):
+        with self.cache_lock:
+            self.news_cache[ticker] = (news, time.time())
+            self._save_cache()
 
 class Wallet:
-    @staticmethod
-    def load_or_create(initial_balance=5000000):
-        """
-        Static method to load an existing wallet or create a new one
-        :param initial_balance: Initial balance for new wallet
-        :return: Wallet instance
-        """
-        if os.path.exists('wallet.json'):
-            with open('wallet.json', 'r') as f:
-                state = json.load(f)
-                initial_balance = state.get('available_balance', initial_balance)
-        return Wallet(initial_balance=initial_balance)
-
-    def __init__(self, initial_balance=5000000):
-        """Initialize wallet with initial balance and empty portfolio"""
-        self.available_balance = initial_balance
-        self.initial_balance = initial_balance  # Store initial balance for P&L calculation
-        self.portfolio = {}  # Format: {symbol: {'quantity': int, 'avg_buy_price': float}}
-        self.short_positions = {}  # Format: {symbol: {'quantity': int, 'avg_short_price': float}}
-        self.transaction_fee = 0.0025  # 0.25%
-        self.order_size_limit = 1000000  # $1M limit per order
-        self.margin_requirement = 0.5  # 50% margin requirement for short positions
-        self.trade_history = []  # List to track all trades
+    def __init__(self, initial_balance: float = 10000.0, wallet_file: str = "wallet.json", logger: Optional[logging.Logger] = None):
+        """Initialize wallet with optional initial balance."""
+        self.wallet_file = wallet_file
+        self.positions: Dict[str, Position] = {}
+        self.trades: List[Trade] = []
+        self.trade_lock = threading.Lock()
+        self.FEE_RATE = 0.0025
+        self.cache = StockCache(cache_duration=60)  # Set cache duration to 60 seconds
+        self.logger = get_class_logger(logger or setup_logger(), "Wallet")
+        self.running = True
+        self.yahoo_client = YahooAPIClient(logger=logger)
         
-        # Setup logging
-        if not os.path.exists('logs'):
-            os.makedirs('logs')
-        
-        # Configure logging to write to both console and file
-        log_filename = f'logs/trading_{datetime.now().strftime("%Y%m%d")}.log'
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(message)s',
-            handlers=[
-                logging.FileHandler(log_filename),
-                logging.StreamHandler()
-            ]
-        )
-        
-        # Load existing wallet state if it exists
-        if os.path.exists('wallet.json'):
-            self.load_state()
+        # Load existing wallet if it exists, otherwise use initial values
+        if os.path.exists(wallet_file):
+            self._load_wallet()
         else:
-            self.save_state()
-            
-    def clean_symbol(self, symbol):
-        """Clean symbol by removing $ prefix and any whitespace"""
-        if not symbol:
-            return None
-        return symbol.replace('$', '').replace(' ', '')
+            self.initial_balance = initial_balance
+            self.balance = initial_balance
+            self._save_wallet()
+        
+        # Start the order execution thread
+        self.execution_thread = threading.Thread(target=self._execute_pending_trades, daemon=True)
+        self.execution_thread.start()
+        self.logger.info("Wallet initialized and execution thread started")
 
-    def get_current_price(self, symbol):
-        """Get current price for a symbol"""
+    def _load_wallet(self) -> None:
+        """Load wallet data from JSON file if it exists."""
         try:
-            # Clean symbol
-            symbol = self.clean_symbol(symbol)
-            if not symbol:
-                logging.error("Invalid symbol provided")
-                return None
+            with open(self.wallet_file, 'r') as f:
+                data = json.load(f)
+                self.initial_balance = data.get('initial_balance', 10000.0)
+                self.balance = data.get('balance', self.initial_balance)
                 
-            ticker = yf.Ticker(symbol)
-            info = ticker.info
-            
-            # Try different price fields in order of preference
-            price_fields = [
-                'regularMarketPrice',
-                'currentPrice',
-                'previousClose',
-                'regularMarketPreviousClose'
-            ]
-            
-            for field in price_fields:
-                if field in info and info[field] is not None:
-                    return info[field]
-            
-            # If no price found in info, try getting it from history
-            hist = ticker.history(period="1d")
-            if not hist.empty:
-                return hist['Close'].iloc[-1]
+                # Load positions
+                self.positions = {}
+                for ticker, pos_data in data.get('positions', {}).items():
+                    self.positions[ticker] = Position(
+                        ticker=ticker,
+                        quantity=pos_data['quantity'],
+                        avg_price=pos_data['avg_price']
+                    )
                 
-            logging.error(f"Could not find any valid price for {symbol}")
-            return None
-            
-        except Exception as e:
-            logging.error(f"Error fetching price for {symbol}: {str(e)}")
-            return None
-
-    def get_portfolio_value(self):
-        """Calculate total portfolio value including available balance"""
-        portfolio_value = self.available_balance
-        
-        # Clean all portfolio symbols
-        clean_portfolio = {self.clean_symbol(symbol): data for symbol, data in self.portfolio.items()}
-        clean_shorts = {self.clean_symbol(symbol): data for symbol, data in self.short_positions.items()}
-        
-        for symbol, data in clean_portfolio.items():
-            if not symbol:
-                continue
-            current_price = self.get_current_price(symbol)
-            if current_price:
-                position_value = data['quantity'] * current_price
-                portfolio_value += position_value
-        
-        for symbol, data in clean_shorts.items():
-            if not symbol:
-                continue
-            current_price = self.get_current_price(symbol)
-            if current_price:
-                position_value = data['quantity'] * current_price
-                portfolio_value += position_value
-        
-        return portfolio_value
-
-    def get_position_value(self, symbol):
-        """Get current value and P&L for a specific position"""
-        # Clean symbol
-        symbol = self.clean_symbol(symbol)
-        if not symbol:
-            logging.error("Invalid symbol provided")
-            return None
-            
-        current_price = self.get_current_price(symbol)
-        if not current_price:
-            return None
-            
-        position_value = 0
-        cost_basis = 0
-        unrealized_pl = 0
-        
-        # Long position
-        if symbol in self.portfolio:
-            position = self.portfolio[symbol]
-            position_value = position['quantity'] * current_price
-            cost_basis = position['quantity'] * position['avg_buy_price']
-            unrealized_pl = position_value - cost_basis
-            
-        # Short position
-        elif symbol in self.short_positions:
-            position = self.short_positions[symbol]
-            position_value = position['quantity'] * current_price
-            cost_basis = position['quantity'] * position['avg_short_price']
-            unrealized_pl = cost_basis - position_value  # For shorts, profit is reversed
-            
-        else:
-            return None
-        
-        return {
-            'current_value': position_value,
-            'cost_basis': cost_basis,
-            'unrealized_pl': unrealized_pl,
-            'unrealized_pl_pct': (unrealized_pl / cost_basis) * 100 if cost_basis > 0 else 0
-        }
-
-    def place_order(self, symbol, order_type, quantity):
-        """
-        Place a buy, sell, short sell, or buy to cover order
-        order_type: 'buy', 'sell', 'short', or 'cover'
-        """
-        # Clean symbol
-        symbol = self.clean_symbol(symbol)
-        if not symbol:
-            logging.error("Invalid symbol provided")
-            return False
-            
-        # Check trade limits
-        can_trade, reason = self.can_trade()
-        if not can_trade:
-            logging.error(f"Trade rejected: {reason}")
-            return False
-        
-        current_price = self.get_current_price(symbol)
-        if not current_price:
-            logging.error(f"Could not get current price for {symbol}")
-            return False
-
-        order_value = quantity * current_price
-        fee = order_value * self.transaction_fee
-
-        try:
-            if order_type == 'buy':
-                if order_value + fee > self.available_balance:
-                    logging.error(f"Insufficient funds for buy order: {order_value + fee:.2f} needed")
-                    return False
-                
-                if symbol in self.portfolio:
-                    # Update average buy price
-                    current_quantity = self.portfolio[symbol]['quantity']
-                    current_avg_price = self.portfolio[symbol]['avg_buy_price']
-                    new_quantity = current_quantity + quantity
-                    new_avg_price = ((current_quantity * current_avg_price) + (quantity * current_price)) / new_quantity
-                    self.portfolio[symbol] = {'quantity': new_quantity, 'avg_buy_price': new_avg_price}
-                else:
-                    self.portfolio[symbol] = {'quantity': quantity, 'avg_buy_price': current_price}
-                
-                self.available_balance -= (order_value + fee)
-                
-                # Record the trade
-                trade_data = {
-                    'timestamp': datetime.now(),
-                    'symbol': symbol,
-                    'type': 'buy',
-                    'quantity': quantity,
-                    'price': current_price,
-                    'value': order_value,
-                    'fee': fee
-                }
-                self.add_trade(trade_data)
-                
-                logging.info(f"Bought {quantity} shares of {symbol} at ${current_price:.2f}")
-                return True
-
-            elif order_type == 'sell':
-                if symbol not in self.portfolio or self.portfolio[symbol]['quantity'] < quantity:
-                    logging.error(f"Insufficient shares for sell order: {symbol}")
-                    return False
-                
-                # Calculate profit/loss
-                avg_buy_price = self.portfolio[symbol]['avg_buy_price']
-                profit_loss = (current_price - avg_buy_price) * quantity - fee
-                
-                # Update portfolio
-                self.portfolio[symbol]['quantity'] -= quantity
-                if self.portfolio[symbol]['quantity'] == 0:
-                    del self.portfolio[symbol]
-                
-                self.available_balance += (order_value - fee)
-                
-                # Record the trade
-                trade_data = {
-                    'timestamp': datetime.now(),
-                    'symbol': symbol,
-                    'type': 'sell',
-                    'quantity': quantity,
-                    'price': current_price,
-                    'value': order_value,
-                    'fee': fee,
-                    'profit_loss': profit_loss
-                }
-                self.add_trade(trade_data)
-                
-                logging.info(f"Sold {quantity} shares of {symbol} at ${current_price:.2f}, P&L: ${profit_loss:.2f}")
-                return True
-
-            elif order_type == 'short':
-                # Check margin requirement
-                margin_required = order_value * self.margin_requirement
-                if margin_required > self.available_balance:
-                    logging.error(f"Insufficient margin for short order: ${margin_required:.2f} needed")
-                    return False
-
-                # Simulate order delay
-                time.sleep(2)  # 2-second execution delay
-
-                # Execute short order
-                self.available_balance -= margin_required  # Reserve margin
-                
-                if symbol in self.short_positions:
-                    # Update average short price
-                    current_quantity = self.short_positions[symbol]['quantity']
-                    current_avg_price = self.short_positions[symbol]['avg_short_price']
-                    total_quantity = current_quantity + quantity
-                    new_avg_price = ((current_quantity * current_avg_price) + (quantity * current_price)) / total_quantity
+                # Load trades
+                self.trades = []
+                for trade_data in data.get('trades', []):
+                    self.trades.append(Trade(**trade_data))
                     
-                    self.short_positions[symbol]['quantity'] = total_quantity
-                    self.short_positions[symbol]['avg_short_price'] = new_avg_price
-                else:
-                    self.short_positions[symbol] = {
-                        'quantity': quantity,
-                        'avg_short_price': current_price
-                    }
+        except Exception as e:
+            self.logger.error(f"Error loading wallet data: {str(e)}")
+            # Initialize with default values if loading fails
+            self.initial_balance = 10000.0
+            self.balance = self.initial_balance
+            self.positions = {}
+            self.trades = []
 
-                logging.info(f"SHORT ORDER: {quantity} {symbol} @ ${current_price:.2f} | Fee: ${fee:.2f}")
-                self.save_state()
-                return True
+    def _save_wallet(self) -> None:
+        """Save wallet data to JSON file."""
+        try:
+            with self.trade_lock:  # Ensure thread safety during save
+                data = {
+                    'initial_balance': self.initial_balance,
+                    'balance': self.balance,
+                    'positions': {
+                        ticker: {'quantity': pos.quantity, 'avg_price': pos.avg_price}
+                        for ticker, pos in self.positions.items()
+                    },
+                    'trades': [vars(trade) for trade in self.trades]
+                }
+                
+                # Write to a temporary file first
+                temp_file = f"{self.wallet_file}.tmp"
+                with open(temp_file, 'w') as f:
+                    json.dump(data, f, indent=4)
+                
+                # Then atomically rename it to the actual file
+                os.replace(temp_file, self.wallet_file)
+                
+        except Exception as e:
+            self.logger.error(f"Error saving wallet data: {str(e)}")
+            # If there was an error, try to restore from the original file
+            try:
+                if os.path.exists(f"{self.wallet_file}.tmp"):
+                    os.remove(f"{self.wallet_file}.tmp")
+            except:
+                pass
 
-            elif order_type == 'cover':
-                if symbol not in self.short_positions or self.short_positions[symbol]['quantity'] < quantity:
-                    logging.error(f"Insufficient {symbol} short quantity to cover")
+    def get_stock_data(self, ticker: str) -> pd.DataFrame:
+        """Fetch stock data from Yahoo Finance with caching."""
+        self.logger.debug(f"Fetching stock data for {ticker}")
+        
+        # Check cache first
+        cached_data = self.cache.get_data(ticker)
+        if cached_data is not None:
+            self.logger.debug(f"Using cached data for {ticker} (age: {time.time() - self.cache.cache[ticker][1]:.1f}s)")
+            return cached_data
+            
+        try:
+            # Get historical data for the last month
+            end_date = datetime.utcnow()
+            start_date = end_date - timedelta(days=30)  # Use last 30 days instead of previous month
+            hist = self.yahoo_client.get_stock_history(ticker, start_date, end_date)
+            
+            if hist is None or hist.empty:
+                raise ValueError(f"No historical data available for {ticker}")
+                
+            # Cache the data
+            self.cache.set_data(ticker, hist)
+            self.logger.debug(f"Successfully fetched and cached {len(hist)} data points for {ticker}")
+            return hist
+            
+        except Exception as e:
+            self.logger.error(f"Error fetching data for {ticker}: {str(e)}")
+            raise
+
+    def get_current_price(self, ticker: str) -> float:
+        """Get the current price of a stock with caching."""
+        self.logger.debug(f"Fetching current price for {ticker}")
+        
+        # Check cache first
+        cached_price = self.cache.get_price(ticker)
+        if cached_price is not None:
+            self.logger.debug(f"Using cached price for {ticker} (age: {time.time() - self.cache.price_cache[ticker][1]:.1f}s): ${cached_price:,.2f}")
+            return cached_price
+            
+        try:
+            # Get stock info from Yahoo client
+            info = self.yahoo_client.get_stock_info(ticker)
+            if not info:
+                raise ValueError(f"No price data available for {ticker}")
+                
+            price = info.get('regularMarketPrice') or info.get('currentPrice')
+            if not price:
+                raise ValueError(f"Invalid price data for {ticker}")
+                
+            # Cache the price
+            self.cache.set_price(ticker, price)
+            self.logger.debug(f"Current price for {ticker}: ${price:,.2f}")
+            return price
+            
+        except Exception as e:
+            self.logger.error(f"Error fetching price for {ticker}: {str(e)}")
+            raise
+
+    def get_stock_news(self, ticker: str) -> List[Dict[str, Any]]:
+        """Get recent news for a stock with caching."""
+        self.logger.debug(f"Fetching news for {ticker}")
+        
+        # Check cache first
+        cached_news = self.cache.get_news(ticker)
+        if cached_news is not None:
+            self.logger.debug(f"Using cached news for {ticker}")
+            return cached_news
+            
+        try:
+            # Get stock info which includes news
+            info = self.yahoo_client.get_stock_info(ticker)
+            if not info:
+                raise ValueError(f"No data available for {ticker}")
+                
+            news = info.get('news', [])
+            
+            # Cache the news
+            self.cache.set_news(ticker, news)
+            self.logger.debug(f"Successfully fetched {len(news)} news items for {ticker}")
+            return news
+            
+        except Exception as e:
+            self.logger.error(f"Error fetching news for {ticker}: {str(e)}")
+            return []
+
+    def place_order(self, order_type: Literal["buy", "sell"], ticker: str, quantity: float) -> bool:
+        """Place a new order."""
+        self.logger.info(f"Placing {order_type} order for {quantity} shares of {ticker}")
+        current_price = self.get_current_price(ticker)
+        total_cost = current_price * quantity * (1 + self.FEE_RATE)
+        
+        with self.trade_lock:
+            if order_type == "buy":
+                if total_cost > self.balance:
+                    self.logger.warning(f"Insufficient funds for buy order. Required: ${total_cost:,.2f}, Available: ${self.balance:,.2f}")
+                    return False
+            
+            if order_type == "sell":
+                position = self.positions.get(ticker)
+                if not position or position.quantity < quantity:
+                    self.logger.warning(f"Insufficient shares for sell order. Required: {quantity}, Available: {position.quantity if position else 0}")
                     return False
 
-                # Simulate order delay
-                time.sleep(2)  # 2-second execution delay
-
-                # Execute buy to cover order
-                self.short_positions[symbol]['quantity'] -= quantity
-                cover_cost = order_value + fee
-                margin_released = (order_value * self.margin_requirement)
-                self.available_balance += margin_released - cover_cost
-
-                # Remove symbol from short positions if quantity is 0
-                if self.short_positions[symbol]['quantity'] == 0:
-                    del self.short_positions[symbol]
-
-                logging.info(f"COVER ORDER: {quantity} {symbol} @ ${current_price:.2f} | Fee: ${fee:.2f}")
-                self.save_state()
-                return True
-
-            return False
-
-        except Exception as e:
-            logging.error(f"Error placing order: {str(e)}")
-            return False
-
-    def get_portfolio_summary(self):
-        """Get a summary of current portfolio positions and their P&L"""
-        summary = {
-            'available_balance': self.available_balance,
-            'long_positions': {},
-            'short_positions': {}
-        }
-        
-        total_portfolio_value = self.available_balance
-        
-        # Clean all portfolio symbols
-        clean_portfolio = {self.clean_symbol(symbol): data for symbol, data in self.portfolio.items()}
-        clean_shorts = {self.clean_symbol(symbol): data for symbol, data in self.short_positions.items()}
-        
-        # Long positions
-        for symbol, data in clean_portfolio.items():
-            if not symbol:
-                continue
-            current_price = self.get_current_price(symbol)
-            if current_price:
-                position_value = data['quantity'] * current_price
-                cost_basis = data['quantity'] * data['avg_buy_price']
-                unrealized_pl = position_value - cost_basis
-                unrealized_pl_pct = (unrealized_pl / cost_basis) * 100 if cost_basis > 0 else 0
-                
-                summary['long_positions'][symbol] = {
-                    'quantity': data['quantity'],
-                    'avg_buy_price': data['avg_buy_price'],
-                    'current_price': current_price,
-                    'current_value': position_value,
-                    'cost_basis': cost_basis,
-                    'unrealized_pl': unrealized_pl,
-                    'unrealized_pl_pct': unrealized_pl_pct
-                }
-                total_portfolio_value += position_value
-        
-        # Short positions
-        for symbol, data in clean_shorts.items():
-            if not symbol:
-                continue
-            current_price = self.get_current_price(symbol)
-            if current_price:
-                position_value = data['quantity'] * current_price
-                cost_basis = data['quantity'] * data['avg_short_price']
-                # For shorts, profit is when current price is lower than short price
-                unrealized_pl = cost_basis - position_value
-                unrealized_pl_pct = (unrealized_pl / cost_basis) * 100 if cost_basis > 0 else 0
-                
-                summary['short_positions'][symbol] = {
-                    'quantity': data['quantity'],
-                    'avg_short_price': data['avg_short_price'],
-                    'current_price': current_price,
-                    'current_value': position_value,
-                    'cost_basis': cost_basis,
-                    'unrealized_pl': unrealized_pl,
-                    'unrealized_pl_pct': unrealized_pl_pct
-                }
-                # For shorts, we need to consider the margin requirement and unrealized P&L
-                total_portfolio_value += (position_value * self.margin_requirement) + unrealized_pl
-        
-        summary['total_portfolio_value'] = total_portfolio_value
-        return summary
-
-    def load_trade_history(self):
-        """Load trade history from wallet state"""
-        try:
-            if os.path.exists('wallet.json'):
-                with open('wallet.json', 'r') as f:
-                    state = json.load(f)
-                    self.trade_history = state.get('trade_history', [])
-                # Convert timestamp strings back to datetime objects
-                for trade in self.trade_history:
-                    if isinstance(trade['timestamp'], str):
-                        trade['timestamp'] = datetime.fromisoformat(trade['timestamp'])
-                # Ensure trades are sorted by date
-                self.trade_history.sort(key=lambda x: x['timestamp'])
-            else:
-                self.trade_history = []
-        except Exception as e:
-            logging.error(f"Error loading trade history: {str(e)}")
-            self.trade_history = []
-
-    def save_trade_history(self):
-        """Save trade history as part of wallet state"""
-        self.save_state()  # Trade history is now saved as part of the wallet state
-
-    def add_trade(self, trade_data):
-        """Add a trade to history and save"""
-        trade_copy = trade_data.copy()
-        self.trade_history.append(trade_copy)
-        # Sort by timestamp to maintain chronological order
-        self.trade_history.sort(key=lambda x: x['timestamp'])
-        self.save_trade_history()
-
-    def get_trade_performance(self, start_date=None, end_date=None):
-        """
-        Get performance summary of all trades within the specified date range
-        
-        Args:
-            start_date (datetime, optional): Start date for filtering trades
-            end_date (datetime, optional): End date for filtering trades
-        
-        Returns:
-            dict: Performance metrics or None if no trades
-        """
-        # Calculate unrealized P&L from current positions
-        total_unrealized_pl = 0
-        for symbol, data in self.portfolio.items():
-            current_price = self.get_current_price(symbol)
-            if current_price:
-                position_value = data['quantity'] * current_price
-                cost_basis = data['quantity'] * data['avg_buy_price']
-                total_unrealized_pl += position_value - cost_basis
-                
-        # Calculate realized P&L from completed trades
-        filtered_trades = self.trade_history
-        if start_date:
-            filtered_trades = [t for t in filtered_trades if t['timestamp'] >= start_date]
-        if end_date:
-            filtered_trades = [t for t in filtered_trades if t['timestamp'] <= end_date]
-        
-        if not filtered_trades and total_unrealized_pl == 0:
-            return None
-        
-        # Calculate total realized P&L
-        total_realized_pl = sum(trade.get('profit_loss', 0) for trade in filtered_trades if 'profit_loss' in trade)
-        
-        # Total P&L is realized + unrealized
-        total_pl = total_realized_pl + total_unrealized_pl
-        
-        # Sort trades by profit/loss
-        completed_trades = [t for t in filtered_trades if 'profit_loss' in t]
-        winning_trades = sorted(completed_trades, key=lambda x: x['profit_loss'], reverse=True)
-        losing_trades = sorted(completed_trades, key=lambda x: x['profit_loss'])
-        
-        return {
-            'total_trades': len(completed_trades),
-            'total_pl': total_pl,
-            'realized_pl': total_realized_pl,
-            'unrealized_pl': total_unrealized_pl,
-            'top_winners': winning_trades[:5],
-            'top_losers': losing_trades[:5],
-            'win_rate': len([t for t in completed_trades if t['profit_loss'] > 0]) / len(completed_trades) if completed_trades else 0,
-            'start_date': min(t['timestamp'] for t in filtered_trades) if filtered_trades else None,
-            'end_date': max(t['timestamp'] for t in filtered_trades) if filtered_trades else None
-        }
-
-    def can_trade(self):
-        """
-        Check if trading is allowed
-        Returns: (bool, str) - (can trade, reason if cannot trade)
-        """
-        return True, "Trading allowed"
-
-    def save(self):
-        """Save wallet state to file"""
-        self.save_state()
-        
-    def save_state(self):
-        """Save wallet state to JSON file"""
-        try:
-            # Prepare trade history for JSON serialization
-            history_to_save = []
-            for trade in self.trade_history:
-                trade_copy = trade.copy()
-                if isinstance(trade_copy['timestamp'], datetime):
-                    trade_copy['timestamp'] = trade_copy['timestamp'].isoformat()
-                history_to_save.append(trade_copy)
-
-            state = {
-                'available_balance': self.available_balance,
-                'portfolio': self.portfolio,
-                'short_positions': self.short_positions,
-                'trade_history': history_to_save
-            }
-            with open('wallet.json', 'w') as f:
-                json.dump(state, f, indent=4)
-        except Exception as e:
-            logging.error(f"Error saving wallet state: {str(e)}")
-
-    def load_state(self):
-        """Load wallet state from JSON file"""
-        try:
-            with open('wallet.json', 'r') as f:
-                state = json.load(f)
-            self.available_balance = state.get('available_balance', self.initial_balance)
-            self.portfolio = state.get('portfolio', {})
-            self.short_positions = state.get('short_positions', {})
+            # Create and append the trade
+            trade = Trade(
+                type=order_type,
+                ticker=ticker,
+                quantity=quantity,
+                price=current_price,
+                date=datetime.now().isoformat()
+            )
+            self.trades.append(trade)
             
-            # Load and process trade history
-            self.trade_history = state.get('trade_history', [])
-            for trade in self.trade_history:
-                if isinstance(trade['timestamp'], str):
-                    trade['timestamp'] = datetime.fromisoformat(trade['timestamp'])
+            # Save immediately after modifying trades list
+            self._save_wallet()
+            self.logger.info(f"Order placed successfully: {order_type} {quantity} {ticker} @ ${current_price:,.2f}")
+            return True
+
+    def cancel_pending_orders(self) -> None:
+        """Cancel all pending orders and refund them."""
+        self.logger.info("Cancelling all pending orders")
+        with self.trade_lock:
+            modified = False
+            for trade in self.trades:
+                if trade.status == "pending":
+                    if trade.type == "buy":
+                        # Refund the reserved amount including fees
+                        refund_amount = trade.price * trade.quantity * (1 + self.FEE_RATE)
+                        self.balance += refund_amount
+                        self.logger.info(f"Refunded ${refund_amount:,.2f} for cancelled {trade.type} order of {trade.quantity} {trade.ticker}")
+                    
+                    trade.status = "cancelled"
+                    trade.execution_date = datetime.now().isoformat()
+                    modified = True
             
-            # Ensure trades are sorted by date
-            self.trade_history.sort(key=lambda x: x['timestamp'])
+            if modified:
+                self._save_wallet()
+                self.logger.info("All pending orders cancelled and wallet saved")
+
+    def shutdown(self) -> None:
+        """Gracefully shutdown the wallet."""
+        self.logger.info("Initiating wallet shutdown")
+        
+        # First set running to False to stop background operations
+        self.running = False
+        
+        try:
+            # Wait for execution thread to finish with a timeout
+            if hasattr(self, 'execution_thread') and self.execution_thread.is_alive():
+                self.execution_thread.join(timeout=2)
+            
+            # Force acquire the trade lock with a timeout to prevent deadlock
+            lock_acquired = self.trade_lock.acquire(timeout=2)
+            try:
+                # Cancel pending orders
+                for trade in self.trades:
+                    if trade.status == "pending":
+                        if trade.type == "buy":
+                            refund_amount = trade.price * trade.quantity * (1 + self.FEE_RATE)
+                            self.balance += refund_amount
+                            self.logger.info(f"Refunded ${refund_amount:,.2f} for cancelled {trade.type} order")
+                        trade.status = "cancelled"
+                        trade.execution_date = datetime.now().isoformat()
+            finally:
+                if lock_acquired:
+                    self.trade_lock.release()
+            
+            # Save final wallet state
+            self._save_wallet()
+            self.logger.info("Wallet shutdown complete")
+            
         except Exception as e:
-            logging.error(f"Error loading wallet state: {str(e)}")
-            # Initialize with default values if loading fails
-            self.available_balance = self.initial_balance
-            self.portfolio = {}
-            self.short_positions = {}
-            self.trade_history = []
+            self.logger.error(f"Error during wallet shutdown: {str(e)}")
+            # Continue with shutdown even if there was an error
+
+    def _execute_pending_trades(self):
+        """Background thread to execute pending trades after 1-minute delay."""
+        self.logger.info("Starting trade execution thread")
+        while self.running:
+            try:
+                # Try to acquire the lock with a timeout
+                if self.trade_lock.acquire(timeout=1):
+                    try:
+                        current_time = datetime.now()
+                        for trade in self.trades:
+                            if not self.running:
+                                break
+                            if trade.status == "pending":
+                                trade_time = datetime.fromisoformat(trade.date)
+                                if (current_time - trade_time).total_seconds() >= 60:
+                                    self.logger.debug(f"Executing pending trade: {trade.type} {trade.quantity} {trade.ticker}")
+                                    self._execute_trade(trade)
+                    finally:
+                        self.trade_lock.release()
+            except Exception as e:
+                self.logger.error(f"Error in trade execution thread: {str(e)}")
+                if not self.running:  # If we're shutting down, exit the thread
+                    break
+                # Otherwise continue running
+            
+            time.sleep(1)
+        
+        self.logger.info("Trade execution thread stopped")
+
+    def _execute_trade(self, trade: Trade):
+        """Execute a trade after the delay."""
+        try:
+            self.logger.info(f"Executing trade: {trade.type} {trade.quantity} {trade.ticker}")
+            current_price = self.get_current_price(trade.ticker)
+            
+            with self.trade_lock:
+                total_cost = current_price * trade.quantity * (1 + self.FEE_RATE)
+                
+                if trade.type == "buy":
+                    if total_cost <= self.balance:
+                        self.balance -= total_cost
+                        if trade.ticker in self.positions:
+                            pos = self.positions[trade.ticker]
+                            total_quantity = pos.quantity + trade.quantity
+                            total_cost = (pos.quantity * pos.avg_price) + (trade.quantity * current_price)
+                            pos.avg_price = total_cost / total_quantity
+                            pos.quantity = total_quantity
+                        else:
+                            self.positions[trade.ticker] = Position(trade.ticker, trade.quantity, current_price)
+                        trade.status = "executed"
+                        self.logger.info(f"Buy order executed: {trade.quantity} {trade.ticker} @ ${current_price:,.2f}")
+                    else:
+                        trade.status = "failed"
+                        self.logger.error(f"Buy order failed: Insufficient funds")
+                
+                elif trade.type == "sell":
+                    if trade.ticker in self.positions and self.positions[trade.ticker].quantity >= trade.quantity:
+                        self.balance += current_price * trade.quantity * (1 - self.FEE_RATE)
+                        pos = self.positions[trade.ticker]
+                        pos.quantity -= trade.quantity
+                        if pos.quantity == 0:
+                            del self.positions[trade.ticker]
+                        trade.status = "executed"
+                        self.logger.info(f"Sell order executed: {trade.quantity} {trade.ticker} @ ${current_price:,.2f}")
+                    else:
+                        trade.status = "failed"
+                        self.logger.error(f"Sell order failed: Insufficient shares")
+                
+                trade.execution_date = datetime.now().isoformat()
+                # Save immediately after modifying wallet state
+                self._save_wallet()
+        
+        except Exception as e:
+            with self.trade_lock:
+                trade.status = "failed"
+                self.logger.error(f"Trade execution failed: {str(e)}", exc_info=True)
+                self._save_wallet()
+
+    def get_portfolio_value(self) -> float:
+        """Get total portfolio value including cash balance."""
+        total_value = self.balance
+        for ticker, position in self.positions.items():
+            current_price = self.get_current_price(ticker)
+            total_value += current_price * position.quantity
+        self.logger.debug(f"Portfolio value: ${total_value:,.2f}")
+        return total_value
+
+    def get_position(self, ticker: str) -> Optional[Position]:
+        """Get current position for a specific ticker."""
+        position = self.positions.get(ticker)
+        if position:
+            self.logger.debug(f"Position for {ticker}: Quantity: {position.quantity}, Avg Price: ${position.avg_price:,.2f}")
+        return position
+
+    def get_trade_history(self) -> List[Trade]:
+        """Get all historical trades."""
+        self.logger.debug(f"Retrieving {len(self.trades)} historical trades")
+        return self.trades.copy()
