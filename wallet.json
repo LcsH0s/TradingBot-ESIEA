@@ -1,5 +1,5 @@
 {
-    "available_balance": 226353.96957749996,
+    "available_balance": 153136.02357749996,
     "portfolio": {
         "AIR.PA": {
             "quantity": 2059,
@@ -128,8 +128,8 @@
             "avg_short_price": 56.93997892888498
         },
         "KPN.AS": {
-            "quantity": 39857,
-            "avg_short_price": 3.678
+            "quantity": 79671,
+            "avg_short_price": 3.6779999999999995
         },
         "HEIA.AS": {
             "quantity": 2164,
