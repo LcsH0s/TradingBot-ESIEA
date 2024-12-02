@@ -1,423 +1,427 @@
 {
-    "available_balance": 1330984.7265450011,
+    "available_balance": 3247606.8704775,
     "portfolio": {
-        "MT.AS": {
-            "quantity": 13038,
-            "avg_buy_price": 23.7
+        "AIR.PA": {
+            "quantity": 2059,
+            "avg_buy_price": 147.58
         },
         "ATO.PA": {
-            "quantity": 239410,
-            "avg_buy_price": 0.8852
+            "quantity": 274869,
+            "avg_buy_price": 0.865
+        },
+        "CS.PA": {
+            "quantity": 9395,
+            "avg_buy_price": 32.3
+        },
+        "BNP.PA": {
+            "quantity": 5447,
+            "avg_buy_price": 55.7
         },
         "CAP.PA": {
-            "quantity": 1951,
-            "avg_buy_price": 151.45
+            "quantity": 2127,
+            "avg_buy_price": 150.20009402914903
+        },
+        "ACA.PA": {
+            "quantity": 28329,
+            "avg_buy_price": 12.37
+        },
+        "DSY.PA": {
+            "quantity": 4708,
+            "avg_buy_price": 32.32
         },
         "EL.PA": {
-            "quantity": 1356,
-            "avg_buy_price": 227.9
+            "quantity": 665,
+            "avg_buy_price": 228.5
+        },
+        "KER.PA": {
+            "quantity": 698,
+            "avg_buy_price": 217.4
         },
         "OR.PA": {
-            "quantity": 942,
-            "avg_buy_price": 327.65
+            "quantity": 465,
+            "avg_buy_price": 326.8
+        },
+        "MC.PA": {
+            "quantity": 257,
+            "avg_buy_price": 589.3
+        },
+        "RI.PA": {
+            "quantity": 1444,
+            "avg_buy_price": 105.25
+        },
+        "PUB.PA": {
+            "quantity": 1484,
+            "avg_buy_price": 102.4
+        },
+        "SAF.PA": {
+            "quantity": 695,
+            "avg_buy_price": 218.7
+        },
+        "SGO.PA": {
+            "quantity": 1787,
+            "avg_buy_price": 85.14
+        },
+        "SAN.PA": {
+            "quantity": 1868,
+            "avg_buy_price": 91.44
         },
         "SU.PA": {
-            "quantity": 931,
-            "avg_buy_price": 241.79999999999998
+            "quantity": 632,
+            "avg_buy_price": 240.25
         },
-        "WLN.PA": {
-            "quantity": 33671,
-            "avg_buy_price": 6.759999999999999
+        "TEP.PA": {
+            "quantity": 1699,
+            "avg_buy_price": 88.88
         },
-        "UNA.AS": {
-            "quantity": 4029,
-            "avg_buy_price": 56.800000000000004
+        "HO.PA": {
+            "quantity": 1081,
+            "avg_buy_price": 140.7
         },
-        "AD.AS": {
-            "quantity": 6770,
-            "avg_buy_price": 32.74
+        "VIE.PA": {
+            "quantity": 6161,
+            "avg_buy_price": 27.19
         },
-        "PHIA.AS": {
-            "quantity": 8902,
-            "avg_buy_price": 25.619999999999997
+        "DG.PA": {
+            "quantity": 1785,
+            "avg_buy_price": 97.56
+        },
+        "ASML.AS": {
+            "quantity": 227,
+            "avg_buy_price": 649.5
+        },
+        "INGA.AS": {
+            "quantity": 10471,
+            "avg_buy_price": 14.524
         },
         "COLR.BR": {
-            "quantity": 5090,
-            "avg_buy_price": 42.94
+            "quantity": 3405,
+            "avg_buy_price": 42.9
         }
     },
     "short_positions": {
-        "SGO.PA": {
-            "quantity": 3587,
-            "avg_short_price": 86.16
+        "AI.PA": {
+            "quantity": 1933,
+            "avg_short_price": 157.5
         },
-        "SAN.PA": {
-            "quantity": 2576,
-            "avg_short_price": 92.06
+        "MT.AS": {
+            "quantity": 12705,
+            "avg_short_price": 23.959972451790634
         },
-        "DG.PA": {
-            "quantity": 2786,
-            "avg_short_price": 99.56000000000002
+        "BN.PA": {
+            "quantity": 2355,
+            "avg_short_price": 64.76
         },
-        "VIV.PA": {
-            "quantity": 26840,
-            "avg_short_price": 8.66
+        "RMS.PA": {
+            "quantity": 72,
+            "avg_short_price": 2093.0
         },
-        "ASML.AS": {
-            "quantity": 359,
-            "avg_short_price": 642.5
+        "ML.PA": {
+            "quantity": 4883,
+            "avg_short_price": 30.36
+        },
+        "RAND.AS": {
+            "quantity": 3647,
+            "avg_short_price": 41.65
+        },
+        "UNA.AS": {
+            "quantity": 2849,
+            "avg_short_price": 56.9
+        },
+        "KPN.AS": {
+            "quantity": 39857,
+            "avg_short_price": 3.678
+        },
+        "HEIA.AS": {
+            "quantity": 2164,
+            "avg_short_price": 70.28
+        },
+        "SOLB.BR": {
+            "quantity": 4634,
+            "avg_short_price": 32.64
+        },
+        "KBC.BR": {
+            "quantity": 2165,
+            "avg_short_price": 68.04
         },
         "UCB.BR": {
-            "quantity": 1333,
-            "avg_short_price": 183.9
+            "quantity": 875,
+            "avg_short_price": 185.85
         },
         "PROX.BR": {
-            "quantity": 36849,
-            "avg_short_price": 6.089999999999999
+            "quantity": 24689,
+            "avg_short_price": 6.08
         }
     },
     "trade_history": [
         {
-            "timestamp": "2024-11-29T13:09:26.146140",
-            "symbol": "MT.AS",
+            "timestamp": "2024-12-02T09:48:24.032664",
+            "symbol": "AIR.PA",
             "type": "buy",
-            "quantity": 3569,
-            "price": 23.7,
-            "value": 84585.3,
-            "fee": 211.46325000000002
+            "quantity": 1030,
+            "price": 147.58,
+            "value": 152007.40000000002,
+            "fee": 380.0185000000001
         },
         {
-            "timestamp": "2024-11-29T13:09:26.160999",
+            "timestamp": "2024-12-02T09:48:26.111518",
             "symbol": "ATO.PA",
             "type": "buy",
-            "quantity": 65532,
-            "price": 0.8852,
-            "value": 58008.9264,
-            "fee": 145.022316
+            "quantity": 137509,
+            "price": 0.865,
+            "value": 118945.285,
+            "fee": 297.36321250000003
         },
         {
-            "timestamp": "2024-11-29T13:09:26.210140",
+            "timestamp": "2024-12-02T09:48:26.135444",
+            "symbol": "CS.PA",
+            "type": "buy",
+            "quantity": 4700,
+            "price": 32.3,
+            "value": 151810.0,
+            "fee": 379.52500000000003
+        },
+        {
+            "timestamp": "2024-12-02T09:48:26.158007",
+            "symbol": "BNP.PA",
+            "type": "buy",
+            "quantity": 2725,
+            "price": 55.7,
+            "value": 151782.5,
+            "fee": 379.45625
+        },
+        {
+            "timestamp": "2024-12-02T09:48:26.195882",
             "symbol": "CAP.PA",
             "type": "buy",
-            "quantity": 534,
-            "price": 151.45,
-            "value": 80874.29999999999,
-            "fee": 202.18574999999998
+            "quantity": 1064,
+            "price": 150.4,
+            "value": 160025.6,
+            "fee": 400.064
         },
         {
-            "timestamp": "2024-11-29T13:09:26.287900",
+            "timestamp": "2024-12-02T09:48:26.231032",
+            "symbol": "ACA.PA",
+            "type": "buy",
+            "quantity": 14172,
+            "price": 12.37,
+            "value": 175307.63999999998,
+            "fee": 438.2691
+        },
+        {
+            "timestamp": "2024-12-02T09:48:28.282138",
+            "symbol": "DSY.PA",
+            "type": "buy",
+            "quantity": 4708,
+            "price": 32.32,
+            "value": 152162.56,
+            "fee": 380.4064
+        },
+        {
+            "timestamp": "2024-12-02T09:48:28.318100",
             "symbol": "EL.PA",
             "type": "buy",
-            "quantity": 371,
-            "price": 227.9,
-            "value": 84550.90000000001,
-            "fee": 211.37725000000003
+            "quantity": 665,
+            "price": 228.5,
+            "value": 151952.5,
+            "fee": 379.88125
         },
         {
-            "timestamp": "2024-11-29T13:09:26.343254",
+            "timestamp": "2024-12-02T09:48:30.376496",
+            "symbol": "KER.PA",
+            "type": "buy",
+            "quantity": 698,
+            "price": 217.4,
+            "value": 151745.2,
+            "fee": 379.36300000000006
+        },
+        {
+            "timestamp": "2024-12-02T09:48:30.415474",
             "symbol": "OR.PA",
             "type": "buy",
-            "quantity": 258,
-            "price": 327.65,
-            "value": 84533.7,
-            "fee": 211.33425
+            "quantity": 465,
+            "price": 326.8,
+            "value": 151962.0,
+            "fee": 379.90500000000003
         },
         {
-            "timestamp": "2024-11-29T13:09:30.545489",
+            "timestamp": "2024-12-02T09:48:30.442020",
+            "symbol": "MC.PA",
+            "type": "buy",
+            "quantity": 257,
+            "price": 589.3,
+            "value": 151450.09999999998,
+            "fee": 378.62524999999994
+        },
+        {
+            "timestamp": "2024-12-02T09:48:32.543814",
+            "symbol": "RI.PA",
+            "type": "buy",
+            "quantity": 1444,
+            "price": 105.25,
+            "value": 151981.0,
+            "fee": 379.9525
+        },
+        {
+            "timestamp": "2024-12-02T09:48:32.575193",
+            "symbol": "PUB.PA",
+            "type": "buy",
+            "quantity": 1484,
+            "price": 102.4,
+            "value": 151961.6,
+            "fee": 379.904
+        },
+        {
+            "timestamp": "2024-12-02T09:48:32.621781",
+            "symbol": "SAF.PA",
+            "type": "buy",
+            "quantity": 695,
+            "price": 218.7,
+            "value": 151996.5,
+            "fee": 379.99125
+        },
+        {
+            "timestamp": "2024-12-02T09:48:32.651290",
+            "symbol": "SGO.PA",
+            "type": "buy",
+            "quantity": 1787,
+            "price": 85.14,
+            "value": 152145.18,
+            "fee": 380.36295
+        },
+        {
+            "timestamp": "2024-12-02T09:48:32.680887",
+            "symbol": "SAN.PA",
+            "type": "buy",
+            "quantity": 1868,
+            "price": 91.44,
+            "value": 170809.91999999998,
+            "fee": 427.02479999999997
+        },
+        {
+            "timestamp": "2024-12-02T09:48:32.709356",
             "symbol": "SU.PA",
             "type": "buy",
-            "quantity": 330,
-            "price": 241.8,
-            "value": 79794.0,
-            "fee": 199.485
+            "quantity": 632,
+            "price": 240.25,
+            "value": 151838.0,
+            "fee": 379.595
         },
         {
-            "timestamp": "2024-11-29T13:09:34.690976",
-            "symbol": "WLN.PA",
+            "timestamp": "2024-12-02T09:48:32.736866",
+            "symbol": "TEP.PA",
             "type": "buy",
-            "quantity": 11927,
-            "price": 6.76,
-            "value": 80626.52,
-            "fee": 201.5663
+            "quantity": 1699,
+            "price": 88.88,
+            "value": 151007.12,
+            "fee": 377.5178
         },
         {
-            "timestamp": "2024-11-29T13:09:36.766860",
-            "symbol": "UNA.AS",
+            "timestamp": "2024-12-02T09:48:32.765415",
+            "symbol": "HO.PA",
             "type": "buy",
-            "quantity": 1427,
-            "price": 56.8,
-            "value": 81053.59999999999,
-            "fee": 202.634
+            "quantity": 1081,
+            "price": 140.7,
+            "value": 152096.69999999998,
+            "fee": 380.24174999999997
         },
         {
-            "timestamp": "2024-11-29T13:09:36.791609",
-            "symbol": "AD.AS",
+            "timestamp": "2024-12-02T09:48:32.795805",
+            "symbol": "VIE.PA",
             "type": "buy",
-            "quantity": 2398,
-            "price": 32.74,
-            "value": 78510.52,
-            "fee": 196.27630000000002
+            "quantity": 6161,
+            "price": 27.19,
+            "value": 167517.59,
+            "fee": 418.793975
         },
         {
-            "timestamp": "2024-11-29T13:09:36.830195",
-            "symbol": "PHIA.AS",
+            "timestamp": "2024-12-02T09:48:32.825729",
+            "symbol": "DG.PA",
             "type": "buy",
-            "quantity": 3153,
-            "price": 25.62,
-            "value": 80779.86,
-            "fee": 201.94965000000002
+            "quantity": 1785,
+            "price": 97.56,
+            "value": 174144.6,
+            "fee": 435.36150000000004
         },
         {
-            "timestamp": "2024-11-29T13:09:41.056225",
+            "timestamp": "2024-12-02T09:48:32.881829",
+            "symbol": "ASML.AS",
+            "type": "buy",
+            "quantity": 227,
+            "price": 649.5,
+            "value": 147436.5,
+            "fee": 368.59125
+        },
+        {
+            "timestamp": "2024-12-02T09:48:37.061141",
+            "symbol": "INGA.AS",
+            "type": "buy",
+            "quantity": 10471,
+            "price": 14.524,
+            "value": 152080.804,
+            "fee": 380.20201000000003
+        },
+        {
+            "timestamp": "2024-12-02T09:48:49.920067",
             "symbol": "COLR.BR",
             "type": "buy",
-            "quantity": 1803,
-            "price": 42.94,
-            "value": 77420.81999999999,
-            "fee": 193.55204999999998
+            "quantity": 3405,
+            "price": 42.9,
+            "value": 146074.5,
+            "fee": 365.18625000000003
         },
         {
-            "timestamp": "2024-11-29T13:10:05.755741",
-            "symbol": "MT.AS",
+            "timestamp": "2024-12-02T09:49:26.269762",
+            "symbol": "AIR.PA",
             "type": "buy",
-            "quantity": 3354,
-            "price": 23.7,
-            "value": 79489.8,
-            "fee": 198.7245
+            "quantity": 1029,
+            "price": 147.58,
+            "value": 151859.82,
+            "fee": 379.64955000000003
         },
         {
-            "timestamp": "2024-11-29T13:10:05.780096",
+            "timestamp": "2024-12-02T09:49:28.527109",
             "symbol": "ATO.PA",
             "type": "buy",
-            "quantity": 61591,
-            "price": 0.8852,
-            "value": 54520.3532,
-            "fee": 136.300883
+            "quantity": 137360,
+            "price": 0.865,
+            "value": 118816.4,
+            "fee": 297.041
         },
         {
-            "timestamp": "2024-11-29T13:10:05.839775",
+            "timestamp": "2024-12-02T09:49:28.603229",
+            "symbol": "CS.PA",
+            "type": "buy",
+            "quantity": 4695,
+            "price": 32.3,
+            "value": 151648.5,
+            "fee": 379.12125000000003
+        },
+        {
+            "timestamp": "2024-12-02T09:49:28.681059",
+            "symbol": "BNP.PA",
+            "type": "buy",
+            "quantity": 2722,
+            "price": 55.7,
+            "value": 151615.4,
+            "fee": 379.0385
+        },
+        {
+            "timestamp": "2024-12-02T09:49:28.810381",
             "symbol": "CAP.PA",
             "type": "buy",
-            "quantity": 502,
-            "price": 151.45,
-            "value": 76027.9,
-            "fee": 190.06975
+            "quantity": 1063,
+            "price": 150.0,
+            "value": 159450.0,
+            "fee": 398.625
         },
         {
-            "timestamp": "2024-11-29T13:10:05.929514",
-            "symbol": "EL.PA",
+            "timestamp": "2024-12-02T09:49:28.949149",
+            "symbol": "ACA.PA",
             "type": "buy",
-            "quantity": 349,
-            "price": 227.9,
-            "value": 79537.1,
-            "fee": 198.84275000000002
-        },
-        {
-            "timestamp": "2024-11-29T13:10:05.994219",
-            "symbol": "OR.PA",
-            "type": "buy",
-            "quantity": 242,
-            "price": 327.65,
-            "value": 79291.29999999999,
-            "fee": 198.22824999999997
-        },
-        {
-            "timestamp": "2024-11-29T13:10:10.224336",
-            "symbol": "SU.PA",
-            "type": "buy",
-            "quantity": 310,
-            "price": 241.8,
-            "value": 74958.0,
-            "fee": 187.395
-        },
-        {
-            "timestamp": "2024-11-29T13:10:14.409625",
-            "symbol": "WLN.PA",
-            "type": "buy",
-            "quantity": 11209,
-            "price": 6.76,
-            "value": 75772.84,
-            "fee": 189.4321
-        },
-        {
-            "timestamp": "2024-11-29T13:10:16.502644",
-            "symbol": "UNA.AS",
-            "type": "buy",
-            "quantity": 1341,
-            "price": 56.8,
-            "value": 76168.8,
-            "fee": 190.422
-        },
-        {
-            "timestamp": "2024-11-29T13:10:16.532463",
-            "symbol": "AD.AS",
-            "type": "buy",
-            "quantity": 2254,
-            "price": 32.74,
-            "value": 73795.96,
-            "fee": 184.4899
-        },
-        {
-            "timestamp": "2024-11-29T13:10:16.574545",
-            "symbol": "PHIA.AS",
-            "type": "buy",
-            "quantity": 2964,
-            "price": 25.62,
-            "value": 75937.68000000001,
-            "fee": 189.84420000000003
-        },
-        {
-            "timestamp": "2024-11-29T13:10:20.800590",
-            "symbol": "COLR.BR",
-            "type": "buy",
-            "quantity": 1694,
-            "price": 42.94,
-            "value": 72740.36,
-            "fee": 181.8509
-        },
-        {
-            "timestamp": "2024-11-29T13:10:51.035695",
-            "symbol": "MT.AS",
-            "type": "buy",
-            "quantity": 3152,
-            "price": 23.7,
-            "value": 74702.4,
-            "fee": 186.756
-        },
-        {
-            "timestamp": "2024-11-29T13:10:51.060728",
-            "symbol": "ATO.PA",
-            "type": "buy",
-            "quantity": 57884,
-            "price": 0.8852,
-            "value": 51238.9168,
-            "fee": 128.097292
-        },
-        {
-            "timestamp": "2024-11-29T13:10:51.122085",
-            "symbol": "CAP.PA",
-            "type": "buy",
-            "quantity": 472,
-            "price": 151.45,
-            "value": 71484.4,
-            "fee": 178.71099999999998
-        },
-        {
-            "timestamp": "2024-11-29T13:10:51.216089",
-            "symbol": "EL.PA",
-            "type": "buy",
-            "quantity": 328,
-            "price": 227.9,
-            "value": 74751.2,
-            "fee": 186.878
-        },
-        {
-            "timestamp": "2024-11-29T13:10:51.285226",
-            "symbol": "OR.PA",
-            "type": "buy",
-            "quantity": 228,
-            "price": 327.65,
-            "value": 74704.2,
-            "fee": 186.7605
-        },
-        {
-            "timestamp": "2024-11-29T13:10:55.507959",
-            "symbol": "SU.PA",
-            "type": "buy",
-            "quantity": 291,
-            "price": 241.8,
-            "value": 70363.8,
-            "fee": 175.9095
-        },
-        {
-            "timestamp": "2024-11-29T13:10:59.676272",
-            "symbol": "WLN.PA",
-            "type": "buy",
-            "quantity": 10535,
-            "price": 6.76,
-            "value": 71216.59999999999,
-            "fee": 178.04149999999998
-        },
-        {
-            "timestamp": "2024-11-29T13:11:01.781010",
-            "symbol": "UNA.AS",
-            "type": "buy",
-            "quantity": 1261,
-            "price": 56.8,
-            "value": 71624.8,
-            "fee": 179.062
-        },
-        {
-            "timestamp": "2024-11-29T13:11:01.812673",
-            "symbol": "AD.AS",
-            "type": "buy",
-            "quantity": 2118,
-            "price": 32.74,
-            "value": 69343.32,
-            "fee": 173.3583
-        },
-        {
-            "timestamp": "2024-11-29T13:11:01.855533",
-            "symbol": "PHIA.AS",
-            "type": "buy",
-            "quantity": 2785,
-            "price": 25.62,
-            "value": 71351.7,
-            "fee": 178.37924999999998
-        },
-        {
-            "timestamp": "2024-11-29T13:11:06.085948",
-            "symbol": "COLR.BR",
-            "type": "buy",
-            "quantity": 1593,
-            "price": 42.94,
-            "value": 68403.42,
-            "fee": 171.00854999999999
-        },
-        {
-            "timestamp": "2024-11-29T13:11:36.323102",
-            "symbol": "MT.AS",
-            "type": "buy",
-            "quantity": 2963,
-            "price": 23.7,
-            "value": 70223.09999999999,
-            "fee": 175.55774999999997
-        },
-        {
-            "timestamp": "2024-11-29T13:11:36.348888",
-            "symbol": "ATO.PA",
-            "type": "buy",
-            "quantity": 54403,
-            "price": 0.8852,
-            "value": 48157.5356,
-            "fee": 120.39383900000001
-        },
-        {
-            "timestamp": "2024-11-29T13:11:36.414052",
-            "symbol": "CAP.PA",
-            "type": "buy",
-            "quantity": 443,
-            "price": 151.45,
-            "value": 67092.34999999999,
-            "fee": 167.73087499999997
-        },
-        {
-            "timestamp": "2024-11-29T13:11:36.507091",
-            "symbol": "EL.PA",
-            "type": "buy",
-            "quantity": 308,
-            "price": 227.9,
-            "value": 70193.2,
-            "fee": 175.483
-        },
-        {
-            "timestamp": "2024-11-29T13:11:36.580763",
-            "symbol": "OR.PA",
-            "type": "buy",
-            "quantity": 214,
-            "price": 327.65,
-            "value": 70117.09999999999,
-            "fee": 175.29274999999998
+            "quantity": 14157,
+            "price": 12.37,
+            "value": 175122.09,
+            "fee": 437.805225
         }
     ]
 }

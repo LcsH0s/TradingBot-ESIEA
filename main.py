@@ -156,6 +156,11 @@ Active Positions: {len(self.wallet.positions)}
     def analyze_and_trade(self, asset):
         """Analyze an asset and execute trades if recommended"""
         try:
+            # Check for rate limiting before proceeding
+            if self.rate_limit_manager.is_rate_limited:
+                self.log_warning(f"Skipping {asset['symbol']}: Rate limited")
+                return
+                
             # Skip if volume is too low or spread is too high
             if asset['avg_volume'] < self.min_volume:
                 self.log_info(f"Skipping {asset['symbol']}: Volume ({asset['avg_volume']:,.0f}) below minimum threshold ({self.min_volume:,.0f})")
@@ -164,8 +169,15 @@ Active Positions: {len(self.wallet.positions)}
                 self.log_info(f"Skipping {asset['symbol']}: Spread ({asset['spread']:.2f}%) above maximum threshold ({self.max_spread:.2f}%)")
                 return
             
-            # Execute trading strategy
-            self.trader.process_asset(asset)
+            # Execute trading strategy with rate limit handling
+            try:
+                self.trader.process_asset(asset)
+            except Exception as e:
+                if "429" in str(e):
+                    self.rate_limit_manager.handle_rate_limit()
+                    self.log_warning(f"Rate limit hit while processing {asset['symbol']}")
+                else:
+                    raise
             
         except Exception as e:
             self.log_error(f"Error processing {asset['symbol']}: {str(e)}")

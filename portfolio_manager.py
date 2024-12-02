@@ -14,7 +14,7 @@ def format_currency(value):
 def generate_portfolio_report(wallet):
     """Generate a detailed portfolio report"""
     summary = wallet.get_portfolio_summary()
-    initial_balance = 5000000  # Fixed initial balance of 5M
+    initial_balance = 9000000  # Fixed initial balance of 5M
     
     # Calculate total value and performance
     total_value = summary['total_portfolio_value']  # This now includes all positions correctly

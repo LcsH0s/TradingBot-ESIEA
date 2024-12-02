@@ -44,8 +44,18 @@ class Trader:
             return None
         return symbol.replace('$', '').replace(' ', '')
 
-    def get_historical_data(self, symbol, period="1d", interval="1m"):
-        """Fetch historical data for analysis"""
+    def get_historical_data(self, symbol, period="5d", interval="1m"):
+        """
+        Fetch historical data for analysis
+        
+        Args:
+            symbol (str): Stock symbol
+            period (str): Data period (default: 5d to ensure enough data points)
+            interval (str): Data interval (default: 1m)
+            
+        Returns:
+            pd.DataFrame: Historical data or None if error
+        """
         try:
             # Clean symbol
             symbol = self.clean_symbol(symbol)
@@ -55,9 +65,25 @@ class Trader:
                 
             ticker = yf.Ticker(symbol)
             df = ticker.history(period=period, interval=interval)
+            
+            # Validate we have enough data
+            if df.empty:
+                logging.error(f"No data returned for {symbol}")
+                return None
+                
+            min_periods_needed = max(self.long_window, self.rsi_period)
+            if len(df) < min_periods_needed:
+                logging.warning(f"Insufficient historical data for {symbol} (got: {len(df)}, needed: {min_periods_needed} periods)")
+                return None
+                
             return df
         except Exception as e:
-            logging.error(f"Error fetching historical data for {symbol}: {str(e)}")
+            if "404" in str(e):
+                logging.error(f"Symbol {symbol} not found")
+            elif "429" in str(e):
+                logging.error(f"Rate limit exceeded while fetching data for {symbol}")
+            else:
+                logging.error(f"Error fetching historical data for {symbol}: {str(e)}")
             return None
 
     def calculate_rsi(self, data, period=14):

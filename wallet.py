@@ -30,8 +30,6 @@ class Wallet:
         self.order_size_limit = 1000000  # $1M limit per order
         self.margin_requirement = 0.5  # 50% margin requirement for short positions
         self.trade_history = []  # List to track all trades
-        self.trade_cooldown = 300  # Minimum seconds between trades (5 minutes)
-        self.last_trade_time = None  # Track the last trade timestamp
         
         # Setup logging
         if not os.path.exists('logs'):
@@ -204,9 +202,6 @@ class Wallet:
                     self.portfolio[symbol] = {'quantity': quantity, 'avg_buy_price': current_price}
                 
                 self.available_balance -= (order_value + fee)
-                
-                # Update last trade time
-                self.last_trade_time = datetime.now()
                 
                 # Record the trade
                 trade_data = {
@@ -464,17 +459,9 @@ class Wallet:
 
     def can_trade(self):
         """
-        Check if trading is allowed based on cooldown period
+        Check if trading is allowed
         Returns: (bool, str) - (can trade, reason if cannot trade)
         """
-        current_time = datetime.now()
-        
-        # Check cooldown period
-        if self.last_trade_time:
-            time_since_last_trade = (current_time - self.last_trade_time).total_seconds()
-            if time_since_last_trade < self.trade_cooldown:
-                return False, f"Cooldown period active ({int(self.trade_cooldown - time_since_last_trade)}s remaining)"
-            
         return True, "Trading allowed"
 
     def save(self):
