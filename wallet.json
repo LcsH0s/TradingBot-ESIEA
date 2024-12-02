@@ -1,5 +1,5 @@
 {
-    "available_balance": 3247606.8704775,
+    "available_balance": 2335307.5103275,
     "portfolio": {
         "AIR.PA": {
             "quantity": 2059,
@@ -26,23 +26,23 @@
             "avg_buy_price": 12.37
         },
         "DSY.PA": {
-            "quantity": 4708,
+            "quantity": 9411,
             "avg_buy_price": 32.32
         },
         "EL.PA": {
-            "quantity": 665,
-            "avg_buy_price": 228.5
+            "quantity": 1329,
+            "avg_buy_price": 228.64988713318286
         },
         "KER.PA": {
-            "quantity": 698,
+            "quantity": 1395,
             "avg_buy_price": 217.4
         },
         "OR.PA": {
-            "quantity": 465,
+            "quantity": 930,
             "avg_buy_price": 326.8
         },
         "MC.PA": {
-            "quantity": 257,
+            "quantity": 514,
             "avg_buy_price": 589.3
         },
         "RI.PA": {
@@ -108,11 +108,11 @@
             "avg_short_price": 23.959972451790634
         },
         "BN.PA": {
-            "quantity": 2355,
+            "quantity": 4708,
             "avg_short_price": 64.76
         },
         "RMS.PA": {
-            "quantity": 72,
+            "quantity": 144,
             "avg_short_price": 2093.0
         },
         "ML.PA": {
@@ -422,6 +422,51 @@
             "price": 12.37,
             "value": 175122.09,
             "fee": 437.805225
+        },
+        {
+            "timestamp": "2024-12-02T09:49:31.114091",
+            "symbol": "DSY.PA",
+            "type": "buy",
+            "quantity": 4703,
+            "price": 32.32,
+            "value": 152000.96,
+            "fee": 380.00239999999997
+        },
+        {
+            "timestamp": "2024-12-02T09:49:31.242788",
+            "symbol": "EL.PA",
+            "type": "buy",
+            "quantity": 664,
+            "price": 228.8,
+            "value": 151923.2,
+            "fee": 379.80800000000005
+        },
+        {
+            "timestamp": "2024-12-02T09:49:33.404305",
+            "symbol": "KER.PA",
+            "type": "buy",
+            "quantity": 697,
+            "price": 217.4,
+            "value": 151527.80000000002,
+            "fee": 378.81950000000006
+        },
+        {
+            "timestamp": "2024-12-02T09:49:33.535384",
+            "symbol": "OR.PA",
+            "type": "buy",
+            "quantity": 465,
+            "price": 326.8,
+            "value": 151962.0,
+            "fee": 379.90500000000003
+        },
+        {
+            "timestamp": "2024-12-02T09:49:33.618362",
+            "symbol": "MC.PA",
+            "type": "buy",
+            "quantity": 257,
+            "price": 589.3,
+            "value": 151450.09999999998,
+            "fee": 378.62524999999994
         }
     ]
 }
