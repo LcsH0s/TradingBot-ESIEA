@@ -19,5 +19,5 @@ RUN mkdir -p logs
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 
-# Run the bot when the container launches
-CMD ["python", "main.py"]
+# Command to run the trading bot
+CMD ["python", "main.py", "run", "-f", "wallet.json", "-v", "DEBUG"]

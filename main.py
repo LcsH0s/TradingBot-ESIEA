@@ -8,6 +8,9 @@ from typing import Optional
 import json
 import logging
 from utils.logger import setup_logger, get_class_logger
+import pandas as pd
+from datetime import datetime
+import os
 
 DEFAULT_TICKERS = ["AAPL", "MSFT", "GOOGL", "AMZN", "META"]
 DEFAULT_WALLET_FILE = "wallet.json"
@@ -18,8 +21,8 @@ def setup_argparse() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
-    parser.add_argument('operation', choices=['run', 'report'],
-                       help='Operation to perform: run (start trading bot) or report (show current positions)')
+    parser.add_argument('operation', choices=['run', 'report', 'export'],
+                       help='Operation to perform: run (start trading bot), report (show current positions), or export (export to Excel)')
     
     parser.add_argument('-f', '--file', type=str, default=DEFAULT_WALLET_FILE,
                        help=f'Wallet file to use (default: {DEFAULT_WALLET_FILE})')
@@ -51,22 +54,54 @@ def format_money(value: float) -> str:
 
 def generate_report(wallet: Wallet, logger: logging.Logger) -> None:
     """Generate and display a detailed trading report"""
+    initial_balance = wallet.initial_balance  # Get the initial balance
     balance = wallet.balance
     positions = wallet.positions
     trades = wallet.trades
     FEE_RATE = wallet.FEE_RATE  # 0.25%
     
     print("\n=== Trading Bot Report ===\n")
-    print(f"Current Balance: ${balance:,.2f}")
     
-    # Current Positions
+    # Calculate total portfolio value and performance
+    total_position_value = 0
+    total_unrealized_pnl = 0
+    
+    if positions:
+        for ticker, position in positions.items():
+            current_price = wallet.get_current_price(ticker, force_update=True)
+            position_value = position.quantity * current_price
+            total_position_value += position_value
+            
+            # Calculate cost basis including buy fees
+            cost_basis = position.quantity * position.avg_price
+            buy_fees = cost_basis * FEE_RATE
+            total_cost = cost_basis + buy_fees
+            
+            # Calculate potential sell fees
+            sell_fees = position_value * FEE_RATE
+            
+            # Unrealized P/L includes both buy and potential sell fees
+            unrealized_pnl = position_value - total_cost - sell_fees
+            total_unrealized_pnl += unrealized_pnl
+    
+    total_portfolio_value = balance + total_position_value
+    
+    # Calculate performance based on initial balance
+    total_performance_dollars = total_portfolio_value - initial_balance
+    total_performance_pct = (total_performance_dollars / initial_balance) * 100
+    
+    # Print summary metrics
+    print(f"Current Portfolio Value: {format_money(total_portfolio_value)}")
+    print(f"Total Performance (%): {'+' if total_performance_pct >= 0 else ''}{total_performance_pct:.2f}%")
+    print(f"Total Performance ($): {format_money(total_performance_dollars)}")
+    print(f"\nCurrent Balance: {format_money(balance)}")
+    
+    # Current Positions Table
     if positions:
         print("\nCurrent Positions:")
         positions_table = []
-        total_unrealized_pnl = 0
         
         for ticker, position in positions.items():
-            # Get latest price from Yahoo Finance
             current_price = wallet.get_current_price(ticker, force_update=True)
             
             # Calculate cost basis including buy fees
@@ -80,7 +115,6 @@ def generate_report(wallet: Wallet, logger: logging.Logger) -> None:
             
             # Unrealized P/L includes both buy and potential sell fees
             unrealized_pnl = position_value - total_cost - sell_fees
-            total_unrealized_pnl += unrealized_pnl
             
             # Return percentage calculation including fees
             total_return = (unrealized_pnl / total_cost) * 100 if total_cost != 0 else 0
@@ -100,16 +134,12 @@ def generate_report(wallet: Wallet, logger: logging.Logger) -> None:
             headers=['Ticker', 'Quantity', 'Avg Price', 'Current Price', 'Position Value', 'Unrealized P/L', 'Return'],
             tablefmt='grid'
         ))
-        print(f"\nTotal Unrealized P/L: ${total_unrealized_pnl:,.2f}")
     
-    # Recent Trades
+    # Recent Trades Table
     if trades:
         print("\nRecent Trades:")
         trades_table = []
         total_fees = 0
-        
-        # Dictionary to track realized P/L per ticker
-        realized_pnl_by_ticker = {}
         
         for trade in trades:
             if trade.status == "executed":
@@ -132,23 +162,95 @@ def generate_report(wallet: Wallet, logger: logging.Logger) -> None:
             headers=['Ticker', 'Type', 'Quantity', 'Price', 'Value', 'Fees', 'Execution Date'],
             tablefmt='grid'
         ))
-        # Since we only have buy trades, realized P/L is 0
-        print(f"\nTotal Realized P/L: $0.00")
-        print(f"Total Trading Fees: ${total_fees:,.2f}")
+        print(f"\nTotal Trading Fees: ${total_fees:,.2f}")
     else:
         print("\nNo trades executed yet")
     
-    # Total P/L (only unrealized since we have no sells)
-    total_pnl = total_unrealized_pnl
-    print(f"\nTotal P/L (Realized + Unrealized): ${total_pnl:,.2f}")
+def export_to_excel(wallet: Wallet, output_file: Optional[str] = None, logger: logging.Logger = None) -> None:
+    """Export wallet data to Excel file with multiple sheets"""
+    if output_file is None:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_file = f"wallet_export_{timestamp}.xlsx"
     
-    # Performance Metrics
-    if trades:
-        executed_trades = [t for t in trades if t.status == "executed"]
-        total_trades = len(executed_trades)
-        # No winning trades yet since we haven't sold anything
-        print(f"\nWin Rate: 0.00% (No completed trades)")
+    # Create a Pandas Excel writer
+    writer = pd.ExcelWriter(output_file, engine='openpyxl')
     
+    # Export Summary
+    summary_data = {
+        'Metric': ['Initial Balance', 'Current Balance', 'Total Position Value', 'Total Portfolio Value', 'Total Performance ($)', 'Total Performance (%)'],
+        'Value': []
+    }
+    
+    # Calculate total position value
+    total_position_value = 0
+    if wallet.positions:
+        for ticker, position in wallet.positions.items():
+            current_price = wallet.get_current_price(ticker, force_update=True)
+            position_value = position.quantity * current_price
+            total_position_value += position_value
+    
+    total_portfolio_value = wallet.balance + total_position_value
+    total_performance_dollars = total_portfolio_value - wallet.initial_balance
+    total_performance_pct = (total_performance_dollars / wallet.initial_balance) * 100
+    
+    summary_data['Value'] = [
+        wallet.initial_balance,
+        wallet.balance,
+        total_position_value,
+        total_portfolio_value,
+        total_performance_dollars,
+        f"{total_performance_pct:.2f}%"
+    ]
+    
+    summary_df = pd.DataFrame(summary_data)
+    summary_df.to_excel(writer, sheet_name='Summary', index=False)
+    
+    # Export Positions
+    if wallet.positions:
+        positions_data = []
+        for ticker, position in wallet.positions.items():
+            current_price = wallet.get_current_price(ticker, force_update=True)
+            position_value = position.quantity * current_price
+            cost_basis = position.quantity * position.avg_price
+            unrealized_pnl = position_value - cost_basis
+            positions_data.append({
+                'Ticker': ticker,
+                'Quantity': position.quantity,
+                'Average Price': position.avg_price,
+                'Current Price': current_price,
+                'Position Value': position_value,
+                'Cost Basis': cost_basis,
+                'Unrealized P/L': unrealized_pnl,
+                'Return (%)': (unrealized_pnl / cost_basis * 100) if cost_basis != 0 else 0
+            })
+        
+        positions_df = pd.DataFrame(positions_data)
+        positions_df.to_excel(writer, sheet_name='Positions', index=False)
+    
+    # Export Trades
+    if wallet.trades:
+        trades_data = []
+        for trade in wallet.trades:
+            if trade.status == "executed":
+                trades_data.append({
+                    'Date': trade.execution_date,
+                    'Type': trade.type.upper(),
+                    'Ticker': trade.ticker,
+                    'Quantity': trade.quantity,
+                    'Price': trade.price,
+                    'Value': trade.price * trade.quantity
+                })
+        
+        trades_df = pd.DataFrame(trades_data)
+        trades_df.to_excel(writer, sheet_name='Trades', index=False)
+    
+    # Save the Excel file
+    writer.close()
+    
+    if logger:
+        logger.info(f"Wallet data exported to: {output_file}")
+    print(f"\nWallet data has been exported to: {output_file}")
+
 def main():
     parser = setup_argparse()
     args = parser.parse_args()
@@ -183,6 +285,11 @@ def main():
             main_logger.info("Generating trading report")
             generate_report(wallet, logger)
             main_logger.info("Report generation completed")
+            
+        elif args.operation == 'export':
+            main_logger.info("Exporting wallet data to Excel")
+            export_to_excel(wallet, logger=logger)
+            main_logger.info("Export completed")
             
     except KeyboardInterrupt:
         main_logger.info("\nReceived interrupt signal. Shutting down gracefully...")

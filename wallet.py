@@ -505,11 +505,11 @@ class Wallet:
                     if trade.ticker in self.positions:
                         pos = self.positions[trade.ticker]
                         total_quantity = pos.quantity + trade.quantity
-                        total_cost = (pos.quantity * pos.avg_price) + (trade.quantity * current_price)
+                        total_cost = (pos.quantity * pos.avg_price) + (trade.quantity * trade.price)
                         pos.avg_price = total_cost / total_quantity
                         pos.quantity = total_quantity
                     else:
-                        self.positions[trade.ticker] = Position(trade.ticker, trade.quantity, current_price)
+                        self.positions[trade.ticker] = Position(trade.ticker, trade.quantity, trade.price)
                     trade.status = "executed"
                     self.logger.info(f"Buy order executed: {trade.quantity} {trade.ticker} @ ${current_price:,.2f}")
                 else:
