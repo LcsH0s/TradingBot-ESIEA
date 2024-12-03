@@ -87,6 +87,8 @@ class YahooAPIClient:
                 df = stock.history(start=start_date, end=end_date)
                 if not df.empty:
                     self.logger.debug(f"Successfully fetched {ticker} history from yfinance: {len(df)} rows")
+                    self.logger.debug(f"Data columns: {df.columns.tolist()}")
+                    self.logger.debug(f"First row: {df.iloc[0].to_dict()}")
                     return df
             except Exception as e:
                 self.logger.warning(f"yfinance history failed for {ticker}, trying direct API: {str(e)}")

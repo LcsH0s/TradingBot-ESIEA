@@ -1,6 +1,6 @@
 {
-    "available_balance": 9000000.0,
-    "portfolio": {},
-    "short_positions": {},
-    "trade_history": []
+    "initial_balance": 9000000.0,
+    "balance": 9000000.0,
+    "positions": {},
+    "trades": []
 }

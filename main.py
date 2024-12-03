@@ -51,90 +51,104 @@ def format_money(value: float) -> str:
 
 def generate_report(wallet: Wallet, logger: logging.Logger) -> None:
     """Generate and display a detailed trading report"""
-    class_logger = get_class_logger(logger, "Report")
-    class_logger.info("\n=== Trading Bot Report ===\n")
+    balance = wallet.balance
+    positions = wallet.positions
+    trades = wallet.trades
+    FEE_RATE = wallet.FEE_RATE  # 0.25%
     
-    # Current Balance
-    class_logger.info(f"Current Balance: {format_money(wallet.balance)}")
+    print("\n=== Trading Bot Report ===\n")
+    print(f"Current Balance: ${balance:,.2f}")
     
     # Current Positions
-    positions = []
-    total_unrealized_pnl = 0.0
-    
-    for ticker, position in wallet.positions.items():
-        current_price = wallet.get_current_price(ticker)
-        position_value = current_price * position.quantity
-        unrealized_pnl = position_value - (position.avg_price * position.quantity)
-        total_unrealized_pnl += unrealized_pnl
-        
-        positions.append([
-            ticker,
-            position.quantity,
-            format_money(position.avg_price),
-            format_money(current_price),
-            format_money(position_value),
-            format_money(unrealized_pnl),
-            f"{((current_price/position.avg_price - 1) * 100):.2f}%"
-        ])
-    
     if positions:
-        class_logger.info("\nCurrent Positions:")
-        class_logger.info("\n" + tabulate(
-            positions,
+        print("\nCurrent Positions:")
+        positions_table = []
+        total_unrealized_pnl = 0
+        
+        for ticker, position in positions.items():
+            # Get latest price from Yahoo Finance
+            current_price = wallet.get_current_price(ticker, force_update=True)
+            
+            # Calculate cost basis including buy fees
+            cost_basis = position.quantity * position.avg_price
+            buy_fees = cost_basis * FEE_RATE
+            total_cost = cost_basis + buy_fees
+            
+            # Calculate current value and potential sell fees
+            position_value = position.quantity * current_price
+            sell_fees = position_value * FEE_RATE
+            
+            # Unrealized P/L includes both buy and potential sell fees
+            unrealized_pnl = position_value - total_cost - sell_fees
+            total_unrealized_pnl += unrealized_pnl
+            
+            # Return percentage calculation including fees
+            total_return = (unrealized_pnl / total_cost) * 100 if total_cost != 0 else 0
+            
+            positions_table.append([
+                ticker,
+                position.quantity,
+                f"${position.avg_price:.2f}",
+                f"${current_price:.2f}",
+                f"${position_value:.2f}",
+                f"${unrealized_pnl:.2f}",
+                f"{total_return:.2f}%"
+            ])
+        
+        print(tabulate(
+            positions_table,
             headers=['Ticker', 'Quantity', 'Avg Price', 'Current Price', 'Position Value', 'Unrealized P/L', 'Return'],
             tablefmt='grid'
         ))
-        class_logger.info(f"\nTotal Unrealized P/L: {format_money(total_unrealized_pnl)}")
-    else:
-        class_logger.info("\nNo current positions")
+        print(f"\nTotal Unrealized P/L: ${total_unrealized_pnl:,.2f}")
     
-    # Trading History
-    realized_pnl = 0.0
-    trades = []
-    
-    for trade in wallet.trades:
-        if trade.status == "executed":
-            trade_value = trade.price * trade.quantity
-            trades.append([
-                trade.ticker,
-                trade.type.upper(),
-                trade.quantity,
-                format_money(trade.price),
-                format_money(trade_value),
-                trade.execution_date
-            ])
-            
-            # Calculate realized P/L
-            if trade.type == "sell":
-                cost_basis = next(
-                    (t.price * t.quantity for t in wallet.trades 
-                     if t.ticker == trade.ticker and t.type == "buy" and t.status == "executed"),
-                    0
-                )
-                realized_pnl += trade_value - cost_basis
-    
+    # Recent Trades
     if trades:
-        class_logger.info("\nRecent Trades:")
-        class_logger.info("\n" + tabulate(
-            trades[-10:],  # Show last 10 trades
-            headers=['Ticker', 'Type', 'Quantity', 'Price', 'Value', 'Execution Date'],
+        print("\nRecent Trades:")
+        trades_table = []
+        total_fees = 0
+        
+        # Dictionary to track realized P/L per ticker
+        realized_pnl_by_ticker = {}
+        
+        for trade in trades:
+            if trade.status == "executed":
+                trade_value = trade.price * trade.quantity
+                trade_fees = trade_value * FEE_RATE
+                total_fees += trade_fees
+                
+                trades_table.append([
+                    trade.ticker,
+                    trade.type.upper(),
+                    trade.quantity,
+                    f"${trade.price:.2f}",
+                    f"${trade_value:.2f}",
+                    f"${trade_fees:.2f}",
+                    trade.execution_date
+                ])
+        
+        print(tabulate(
+            trades_table,
+            headers=['Ticker', 'Type', 'Quantity', 'Price', 'Value', 'Fees', 'Execution Date'],
             tablefmt='grid'
         ))
-        class_logger.info(f"\nTotal Realized P/L: {format_money(realized_pnl)}")
+        # Since we only have buy trades, realized P/L is 0
+        print(f"\nTotal Realized P/L: $0.00")
+        print(f"Total Trading Fees: ${total_fees:,.2f}")
     else:
-        class_logger.info("\nNo trades executed yet")
+        print("\nNo trades executed yet")
     
-    # Total P/L
-    total_pnl = realized_pnl + total_unrealized_pnl
-    class_logger.info(f"\nTotal P/L (Realized + Unrealized): {format_money(total_pnl)}")
+    # Total P/L (only unrealized since we have no sells)
+    total_pnl = total_unrealized_pnl
+    print(f"\nTotal P/L (Realized + Unrealized): ${total_pnl:,.2f}")
     
     # Performance Metrics
     if trades:
-        winning_trades = sum(1 for t in trades if t[4] > 0)
-        total_trades = len(trades)
-        win_rate = (winning_trades / total_trades) * 100 if total_trades > 0 else 0
-        class_logger.info(f"\nWin Rate: {win_rate:.2f}%")
-
+        executed_trades = [t for t in trades if t.status == "executed"]
+        total_trades = len(executed_trades)
+        # No winning trades yet since we haven't sold anything
+        print(f"\nWin Rate: 0.00% (No completed trades)")
+    
 def main():
     parser = setup_argparse()
     args = parser.parse_args()
@@ -149,7 +163,7 @@ def main():
         main_logger.debug("Loaded configuration")
         
         # Initialize wallet
-        wallet = Wallet(wallet_file=args.file)
+        wallet = Wallet(wallet_file=args.file, logger=logger)
         main_logger.info(f"Initialized wallet from file: {args.file}")
         
         if args.operation == 'run':
@@ -160,7 +174,8 @@ def main():
             bot = TraderBot(
                 wallet=wallet,
                 tickers=config['tickers'],
-                min_confidence=config['min_confidence']
+                min_confidence=config['min_confidence'],
+                logger=logger
             )
             bot.run(interval_seconds=config['check_interval'])
             

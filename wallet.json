@@ -1,6 +1,232 @@
 {
     "initial_balance": 9000000.0,
-    "balance": 9000000.0,
-    "positions": {},
-    "trades": []
+    "balance": 54414.99797499977,
+    "positions": {
+        "AMZN": {
+            "quantity": 21176,
+            "avg_price": 210.71
+        },
+        "V": {
+            "quantity": 14089,
+            "avg_price": 316.65
+        }
+    },
+    "trades": [
+        {
+            "type": "buy",
+            "ticker": "AMZN",
+            "quantity": 8542,
+            "price": 210.71,
+            "date": "2024-12-03T11:00:01.747370",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:01:02.016772"
+        },
+        {
+            "type": "buy",
+            "ticker": "V",
+            "quantity": 5684,
+            "price": 316.65,
+            "date": "2024-12-03T11:00:01.757440",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:01:02.096568"
+        },
+        {
+            "type": "buy",
+            "ticker": "AMZN",
+            "quantity": 5117,
+            "price": 210.71,
+            "date": "2024-12-03T11:01:03.349025",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:02:04.244877"
+        },
+        {
+            "type": "buy",
+            "ticker": "V",
+            "quantity": 3405,
+            "price": 316.65,
+            "date": "2024-12-03T11:01:03.538200",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:02:04.285963"
+        },
+        {
+            "type": "buy",
+            "ticker": "AMZN",
+            "quantity": 3065,
+            "price": 210.71,
+            "date": "2024-12-03T11:02:05.466936",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:03:06.494996"
+        },
+        {
+            "type": "buy",
+            "ticker": "V",
+            "quantity": 2039,
+            "price": 316.65,
+            "date": "2024-12-03T11:02:05.652965",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:03:06.542236"
+        },
+        {
+            "type": "buy",
+            "ticker": "AMZN",
+            "quantity": 1836,
+            "price": 210.71,
+            "date": "2024-12-03T11:03:07.827707",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:04:08.791343"
+        },
+        {
+            "type": "buy",
+            "ticker": "V",
+            "quantity": 1222,
+            "price": 316.65,
+            "date": "2024-12-03T11:03:08.019102",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:04:08.835643"
+        },
+        {
+            "type": "buy",
+            "ticker": "AMZN",
+            "quantity": 1100,
+            "price": 210.71,
+            "date": "2024-12-03T11:04:09.854563",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:05:11.000767"
+        },
+        {
+            "type": "buy",
+            "ticker": "V",
+            "quantity": 732,
+            "price": 316.65,
+            "date": "2024-12-03T11:04:10.047800",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:05:11.044057"
+        },
+        {
+            "type": "buy",
+            "ticker": "AMZN",
+            "quantity": 659,
+            "price": 210.71,
+            "date": "2024-12-03T11:05:11.880363",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:06:13.189798"
+        },
+        {
+            "type": "buy",
+            "ticker": "V",
+            "quantity": 438,
+            "price": 316.65,
+            "date": "2024-12-03T11:05:12.076843",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:06:13.231685"
+        },
+        {
+            "type": "buy",
+            "ticker": "AMZN",
+            "quantity": 394,
+            "price": 210.71,
+            "date": "2024-12-03T11:06:13.850612",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:07:15.388381"
+        },
+        {
+            "type": "buy",
+            "ticker": "V",
+            "quantity": 262,
+            "price": 316.65,
+            "date": "2024-12-03T11:06:14.030802",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:07:15.427308"
+        },
+        {
+            "type": "buy",
+            "ticker": "AMZN",
+            "quantity": 236,
+            "price": 210.71,
+            "date": "2024-12-03T11:07:15.943484",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:08:17.588917"
+        },
+        {
+            "type": "buy",
+            "ticker": "V",
+            "quantity": 157,
+            "price": 316.65,
+            "date": "2024-12-03T11:07:16.125405",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:08:17.632106"
+        },
+        {
+            "type": "buy",
+            "ticker": "AMZN",
+            "quantity": 142,
+            "price": 210.71,
+            "date": "2024-12-03T11:08:17.864898",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:09:19.769378"
+        },
+        {
+            "type": "buy",
+            "ticker": "V",
+            "quantity": 94,
+            "price": 316.65,
+            "date": "2024-12-03T11:08:18.039668",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:09:19.809797"
+        },
+        {
+            "type": "buy",
+            "ticker": "AMZN",
+            "quantity": 85,
+            "price": 210.71,
+            "date": "2024-12-03T11:09:19.883764",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:10:19.971439"
+        },
+        {
+            "type": "buy",
+            "ticker": "V",
+            "quantity": 56,
+            "price": 316.65,
+            "date": "2024-12-03T11:09:20.057601",
+            "status": "executed",
+            "execution_date": "2024-12-03T11:10:22.028285"
+        },
+        {
+            "type": "buy",
+            "ticker": "AMZN",
+            "quantity": 68,
+            "price": 210.71,
+            "date": "2024-12-03T11:10:22.028309",
+            "status": "cancelled",
+            "execution_date": "2024-12-03T11:10:32.044539"
+        },
+        {
+            "type": "buy",
+            "ticker": "V",
+            "quantity": 34,
+            "price": 316.65,
+            "date": "2024-12-03T11:10:22.305107",
+            "status": "cancelled",
+            "execution_date": "2024-12-03T11:10:32.044559"
+        },
+        {
+            "type": "buy",
+            "ticker": "AMZN",
+            "quantity": 51,
+            "price": 210.71,
+            "date": "2024-12-03T11:12:25.548741",
+            "status": "cancelled",
+            "execution_date": "2024-12-03T11:12:58.102556"
+        },
+        {
+            "type": "buy",
+            "ticker": "V",
+            "quantity": 34,
+            "price": 316.65,
+            "date": "2024-12-03T11:12:25.840772",
+            "status": "cancelled",
+            "execution_date": "2024-12-03T11:12:58.102564"
+        }
+    ]
 }

@@ -62,168 +62,217 @@ class TraderBot:
         self.shutdown()
 
     def shutdown(self):
-        """Perform graceful shutdown."""
-        try:
-            self.running = False
-            self.logger.info("Stopping trading bot...")
-            
-            # Calculate final portfolio statistics
-            total_value = self.wallet.get_portfolio_value()
-            profit_loss = total_value - self.wallet.initial_balance
-            profit_percentage = (profit_loss / self.wallet.initial_balance) * 100
-            
-            self.logger.info("\n=== Final Trading Statistics ===")
-            self.logger.info(f"Initial Balance: ${self.wallet.initial_balance:,.2f}")
-            self.logger.info(f"Final Portfolio Value: ${total_value:,.2f}")
-            self.logger.info(f"Total Profit/Loss: ${profit_loss:,.2f} ({profit_percentage:,.2f}%)")
-            
-            # Shutdown wallet (cancels pending orders and saves state)
-            self.wallet.shutdown()
-            
-            self.logger.info("Trading bot shutdown complete. Goodbye!")
-            sys.exit(0)
-            
-        except Exception as e:
-            self.logger.error(f"Error during shutdown: {str(e)}", exc_info=True)
-            sys.exit(1)
+        """Gracefully shutdown the trading bot."""
+        self.logger.info("Shutting down trading bot...")
+        self.running = False
+        self.wallet.shutdown()  # Stop the wallet and its components
+        self.logger.info("Trading bot shutdown complete")
 
     def calculate_rsi(self, data: pd.DataFrame) -> pd.Series:
         """Calculate Relative Strength Index"""
-        self.logger.debug("Calculating RSI")
-        delta = data['Close'].diff()
-        gain = (delta.where(delta > 0, 0)).rolling(window=self.rsi_period).mean()
-        loss = (-delta.where(delta < 0, 0)).rolling(window=self.rsi_period).mean()
-        rs = gain / loss
-        return 100 - (100 / (1 + rs))
+        try:
+            self.logger.debug("Calculating RSI")
+            if data.empty:
+                raise ValueError("Empty dataframe provided")
+            
+            self.logger.debug(f"Data shape before RSI: {data.shape}")
+            self.logger.debug(f"Data columns: {data.columns.tolist()}")
+            self.logger.debug(f"First few close prices: {data['Close'].head().tolist()}")
+            
+            delta = data['Close'].diff()
+            self.logger.debug(f"Delta calculated, first few values: {delta.head().tolist()}")
+            
+            gain = (delta.where(delta > 0, 0)).rolling(window=self.rsi_period).mean()
+            self.logger.debug(f"Gain calculated, first few values: {gain.head().tolist()}")
+            
+            loss = (-delta.where(delta < 0, 0)).rolling(window=self.rsi_period).mean()
+            self.logger.debug(f"Loss calculated, first few values: {loss.head().tolist()}")
+            
+            # Handle division by zero
+            rs = gain / loss.replace(0, float('inf'))
+            self.logger.debug(f"RS calculated, first few values: {rs.head().tolist()}")
+            
+            rsi = 100 - (100 / (1 + rs))
+            self.logger.debug(f"RSI calculated, first few values: {rsi.head().tolist()}")
+            
+            if rsi.isna().all():
+                raise ValueError("RSI calculation resulted in all NaN values")
+                
+            return rsi
+        except Exception as e:
+            self.logger.error(f"Error calculating RSI: {str(e)}")
+            self.logger.error(f"Data info: {data.info()}")
+            raise
 
     def calculate_macd(self, data: pd.DataFrame) -> tuple[pd.Series, pd.Series]:
         """Calculate MACD and Signal line"""
-        self.logger.debug("Calculating MACD")
-        exp1 = data['Close'].ewm(span=self.macd_fast).mean()
-        exp2 = data['Close'].ewm(span=self.macd_slow).mean()
-        macd = exp1 - exp2
-        signal = macd.ewm(span=self.macd_signal).mean()
-        return macd, signal
+        try:
+            self.logger.debug("Calculating MACD")
+            if data.empty:
+                raise ValueError("Empty dataframe provided")
+            
+            exp1 = data['Close'].ewm(span=self.macd_fast).mean()
+            exp2 = data['Close'].ewm(span=self.macd_slow).mean()
+            macd = exp1 - exp2
+            signal = macd.ewm(span=self.macd_signal).mean()
+            
+            if macd.isna().all() or signal.isna().all():
+                raise ValueError("MACD calculation resulted in all NaN values")
+                
+            return macd, signal
+        except Exception as e:
+            self.logger.error(f"Error calculating MACD: {str(e)}")
+            raise
 
     def calculate_bollinger_bands(self, data: pd.DataFrame) -> tuple[pd.Series, pd.Series, pd.Series]:
         """Calculate Bollinger Bands"""
-        self.logger.debug("Calculating Bollinger Bands")
-        middle = data['Close'].rolling(window=self.bollinger_period).mean()
-        std = data['Close'].rolling(window=self.bollinger_period).std()
-        upper = middle + (std * self.bollinger_std)
-        lower = middle - (std * self.bollinger_std)
-        return upper, middle, lower
+        try:
+            self.logger.debug("Calculating Bollinger Bands")
+            if data.empty:
+                raise ValueError("Empty dataframe provided")
+            
+            middle = data['Close'].rolling(window=self.bollinger_period).mean()
+            std = data['Close'].rolling(window=self.bollinger_period).std()
+            upper = middle + (std * self.bollinger_std)
+            lower = middle - (std * self.bollinger_std)
+            
+            if middle.isna().all() or upper.isna().all() or lower.isna().all():
+                raise ValueError("Bollinger Bands calculation resulted in all NaN values")
+                
+            return upper, middle, lower
+        except Exception as e:
+            self.logger.error(f"Error calculating Bollinger Bands: {str(e)}")
+            raise
 
     def analyze_ticker(self, ticker: str) -> Optional[TradingSignal]:
         """Analyze a single ticker and generate trading signal"""
-        self.logger.info(f"Analyzing ticker: {ticker}")
         try:
+            self.logger.info(f"=== Starting analysis for {ticker} ===")
+            
             # Get historical data
+            self.logger.debug(f"[Step 1/7] Getting historical data for {ticker}")
             data = self.wallet.get_stock_data(ticker)
+            self.logger.debug(f"Got historical data for {ticker}: Shape={data.shape}, Columns={data.columns.tolist()}")
+            
+            if data.empty:
+                self.logger.warning(f"Empty data received for {ticker}")
+                return None
+                
             if len(data) < max(self.rsi_period, self.macd_slow, self.bollinger_period):
-                self.logger.warning(f"Insufficient historical data for {ticker}")
+                self.logger.warning(f"Insufficient historical data for {ticker}: {len(data)} rows")
                 return None
 
             # Calculate technical indicators
-            rsi = self.calculate_rsi(data)
-            macd, signal = self.calculate_macd(data)
-            upper, middle, lower = self.calculate_bollinger_bands(data)
+            self.logger.debug(f"[Step 2/7] Starting technical analysis for {ticker}")
+            self.logger.debug(f"Last 5 closing prices: {data['Close'].tail().tolist()}")
+            
+            try:
+                self.logger.debug(f"[Step 3/7] Calculating RSI for {ticker}")
+                rsi = self.calculate_rsi(data)
+                self.logger.debug(f"RSI calculation complete. Last 5 values: {rsi.tail().tolist()}")
+            except Exception as e:
+                self.logger.error(f"RSI calculation failed for {ticker}: {str(e)}")
+                raise
 
+            try:
+                self.logger.debug(f"[Step 4/7] Calculating MACD for {ticker}")
+                macd, signal = self.calculate_macd(data)
+                self.logger.debug(f"MACD calculation complete. Last 5 values - MACD: {macd.tail().tolist()}, Signal: {signal.tail().tolist()}")
+            except Exception as e:
+                self.logger.error(f"MACD calculation failed for {ticker}: {str(e)}")
+                raise
+
+            try:
+                self.logger.debug(f"[Step 5/7] Calculating Bollinger Bands for {ticker}")
+                upper, middle, lower = self.calculate_bollinger_bands(data)
+                self.logger.debug(f"Bollinger Bands calculation complete. Last values - Upper: {upper.iloc[-1]:.2f}, Middle: {middle.iloc[-1]:.2f}, Lower: {lower.iloc[-1]:.2f}")
+            except Exception as e:
+                self.logger.error(f"Bollinger Bands calculation failed for {ticker}: {str(e)}")
+                raise
+
+            self.logger.debug(f"[Step 6/7] Analyzing signals for {ticker}")
             current_price = data['Close'].iloc[-1]
-            self.logger.info(f"{ticker} current price: ${current_price:,.2f}")
+            self.logger.debug(f"{ticker} current price: ${current_price:,.2f}")
             
             # Initialize confidence scores for each indicator
             scores = []
             strategies = []
 
-            # RSI Analysis (more aggressive thresholds)
+            # RSI Analysis
             current_rsi = rsi.iloc[-1]
-            self.logger.info(f"{ticker} RSI: {current_rsi:.2f}")
-            if current_rsi < 35:  # Changed from 30
-                score = 0.6 + (35 - current_rsi) / 100  # Changed base score from 0.7
+            self.logger.debug(f"{ticker} RSI: {current_rsi:.2f}")
+            if current_rsi < 35:
+                score = 0.6 + (35 - current_rsi) / 100
                 scores.append(score)
                 strategies.append("RSI_OVERSOLD")
-                self.logger.info(f"RSI Oversold signal: {score:.2f}")
-            elif current_rsi > 65:  # Changed from 70
-                score = 0.6 + (current_rsi - 65) / 100  # Changed base score from 0.7
+                self.logger.debug(f"RSI Oversold signal: {score:.2f}")
+            elif current_rsi > 65:
+                score = 0.6 + (current_rsi - 65) / 100
                 scores.append(score)
                 strategies.append("RSI_OVERBOUGHT")
-                self.logger.info(f"RSI Overbought signal: {score:.2f}")
+                self.logger.debug(f"RSI Overbought signal: {score:.2f}")
 
-            # MACD Analysis (more sensitive)
+            # MACD Analysis
             macd_current = macd.iloc[-1]
             signal_current = signal.iloc[-1]
             macd_prev = macd.iloc[-2]
             signal_prev = signal.iloc[-2]
             
-            self.logger.info(f"{ticker} MACD: {macd_current:.4f}, Signal: {signal_current:.4f}")
+            self.logger.debug(f"{ticker} MACD: {macd_current:.4f}, Signal: {signal_current:.4f}")
             
             if macd_current > signal_current and macd_prev <= signal_prev:
-                scores.append(0.7)  # Changed from 0.8
+                scores.append(0.7)
                 strategies.append("MACD_BULLISH")
-                self.logger.info("MACD Bullish crossover detected")
+                self.logger.debug("MACD Bullish crossover detected")
             elif macd_current < signal_current and macd_prev >= signal_prev:
-                scores.append(0.7)  # Changed from 0.8
+                scores.append(0.7)
                 strategies.append("MACD_BEARISH")
-                self.logger.info("MACD Bearish crossover detected")
+                self.logger.debug("MACD Bearish crossover detected")
 
             # Bollinger Bands Analysis
             current_close = data['Close'].iloc[-1]
             lower_band = lower.iloc[-1]
             upper_band = upper.iloc[-1]
             
-            self.logger.info(f"{ticker} BB: Lower={lower_band:.2f}, Current={current_close:.2f}, Upper={upper_band:.2f}")
+            self.logger.debug(f"{ticker} BB: Lower={lower_band:.2f}, Current={current_close:.2f}, Upper={upper_band:.2f}")
             
             if current_close < lower_band:
-                bb_score = 0.6 + (lower_band - current_close) / lower_band
-                scores.append(bb_score)
+                score = 0.6 + (lower_band - current_close) / current_close
+                scores.append(min(score, 0.9))  # Cap at 0.9
                 strategies.append("BB_OVERSOLD")
-                self.logger.info(f"Price below lower Bollinger Band, score: {bb_score:.2f}")
+                self.logger.debug(f"BB Oversold signal: {score:.2f}")
             elif current_close > upper_band:
-                bb_score = 0.6 + (current_close - upper_band) / upper_band
-                scores.append(bb_score)
+                score = 0.6 + (current_close - upper_band) / current_close
+                scores.append(min(score, 0.9))  # Cap at 0.9
                 strategies.append("BB_OVERBOUGHT")
-                self.logger.info(f"Price above upper Bollinger Band, score: {bb_score:.2f}")
+                self.logger.debug(f"BB Overbought signal: {score:.2f}")
 
+            self.logger.debug(f"[Step 7/7] Generating final signal for {ticker}")
+            # Generate trading signal if we have any scores
             if not scores:
-                self.logger.info(f"No trading signals for {ticker}")
+                self.logger.info(f"No trading signals detected for {ticker}")
                 return None
 
-            # Calculate final confidence and determine action
-            final_confidence = sum(scores) / len(scores)
-            self.logger.info(f"Final confidence score: {final_confidence:.2f}")
-            
-            # Current position check
-            current_position = self.wallet.get_position(ticker)
-            
-            # Determine action based on signals and current position
-            if any(s.endswith("OVERSOLD") for s in strategies) and \
-               (current_position is None or current_position.quantity <= 0):
+            # Determine action based on strategies
+            if any(s.endswith("OVERSOLD") or s.endswith("BULLISH") for s in strategies):
                 action = "buy"
-            elif any(s.endswith("OVERBOUGHT") for s in strategies) and \
-                 (current_position is not None and current_position.quantity > 0):
-                action = "sell"
             else:
-                self.logger.info(f"No actionable signals for {ticker}")
-                return None
+                action = "sell"
 
-            # Consider transaction costs
-            if action == "buy":
-                required_increase = current_price * (1 + 2 * self.transaction_cost)
-                if not any(p > required_increase for p in data['Close'].iloc[-10:]):
-                    final_confidence *= 0.8
-                    self.logger.info(f"Reduced confidence due to transaction costs: {final_confidence:.2f}")
-
+            # Calculate final confidence as average of all scores
+            final_confidence = sum(scores) / len(scores)
+            
             signal = TradingSignal(
                 ticker=ticker,
                 action=action,
                 confidence=final_confidence,
-                strategy="+".join(strategies),
+                strategy=", ".join(strategies),
                 price=current_price,
                 timestamp=datetime.now()
             )
             
-            self.logger.info(f"Generated signal for {ticker}: {action.upper()} (confidence: {final_confidence:.2f})")
+            self.logger.info(f"=== Analysis complete for {ticker} ===")
+            self.logger.info(f"Generated signal: {action.upper()} (confidence: {final_confidence:.2f})")
             return signal
 
         except Exception as e:
