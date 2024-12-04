@@ -1,580 +1,571 @@
 {
-    "available_balance": 153136.02357749996,
-    "portfolio": {
-        "AIR.PA": {
-            "quantity": 2059,
-            "avg_buy_price": 147.58
+    "initial_balance": 5000000,
+    "balance": 703569.21102198,
+    "positions": {
+        "MSFT": {
+            "quantity": 1538.2767012492761,
+            "avg_price": 430.9700012207031
         },
-        "ATO.PA": {
-            "quantity": 274869,
-            "avg_buy_price": 0.865
+        "AAPL": {
+            "quantity": 3062.7319002456256,
+            "avg_price": 239.60000610351562
         },
-        "CS.PA": {
-            "quantity": 9395,
-            "avg_buy_price": 32.3
+        "WMT": {
+            "quantity": 185.36474036317486,
+            "avg_price": 92.62999725341797
         },
-        "BNP.PA": {
-            "quantity": 5447,
-            "avg_buy_price": 55.7
+        "AMD": {
+            "quantity": 8874.446214116786,
+            "avg_price": 142.10000610351562
         },
-        "CAP.PA": {
-            "quantity": 2127,
-            "avg_buy_price": 150.20009402914903
+        "NVDA": {
+            "quantity": 8177.858411886911,
+            "avg_price": 138.63999938964844
         },
-        "ACA.PA": {
-            "quantity": 28329,
-            "avg_buy_price": 12.37
+        "TGT": {
+            "quantity": 7457.363555147819,
+            "avg_price": 130.72999572753906
         },
-        "DSY.PA": {
-            "quantity": 9411,
-            "avg_buy_price": 32.32
+        "GOOGL": {
+            "quantity": 341.8811606851941,
+            "avg_price": 171.49000549316406
         },
-        "EL.PA": {
-            "quantity": 1329,
-            "avg_buy_price": 228.64988713318286
-        },
-        "KER.PA": {
-            "quantity": 1395,
-            "avg_buy_price": 217.4
-        },
-        "OR.PA": {
-            "quantity": 930,
-            "avg_buy_price": 326.8
-        },
-        "MC.PA": {
-            "quantity": 514,
-            "avg_buy_price": 589.3
-        },
-        "RI.PA": {
-            "quantity": 2886,
-            "avg_buy_price": 105.25
-        },
-        "PUB.PA": {
-            "quantity": 2967,
-            "avg_buy_price": 102.40000000000002
-        },
-        "SAF.PA": {
-            "quantity": 1390,
-            "avg_buy_price": 218.7
-        },
-        "SGO.PA": {
-            "quantity": 3572,
-            "avg_buy_price": 85.05005039193728
-        },
-        "SAN.PA": {
-            "quantity": 3734,
-            "avg_buy_price": 91.43999999999998
-        },
-        "SU.PA": {
-            "quantity": 1263,
-            "avg_buy_price": 240.25
-        },
-        "TEP.PA": {
-            "quantity": 3396,
-            "avg_buy_price": 88.88
-        },
-        "HO.PA": {
-            "quantity": 2160,
-            "avg_buy_price": 140.7
-        },
-        "VIE.PA": {
-            "quantity": 12316,
-            "avg_buy_price": 27.19
-        },
-        "DG.PA": {
-            "quantity": 3568,
-            "avg_buy_price": 97.68992713004485
-        },
-        "ASML.AS": {
-            "quantity": 454,
-            "avg_buy_price": 649.5
-        },
-        "INGA.AS": {
-            "quantity": 20931,
-            "avg_buy_price": 14.524
-        },
-        "COLR.BR": {
-            "quantity": 3405,
-            "avg_buy_price": 42.9
+        "COST": {
+            "quantity": 1.3731124637841963,
+            "avg_price": 975.1900024414062
         }
     },
-    "short_positions": {
-        "AI.PA": {
-            "quantity": 1933,
-            "avg_short_price": 157.5
-        },
-        "MT.AS": {
-            "quantity": 12705,
-            "avg_short_price": 23.959972451790634
-        },
-        "BN.PA": {
-            "quantity": 4708,
-            "avg_short_price": 64.76
-        },
-        "RMS.PA": {
-            "quantity": 144,
-            "avg_short_price": 2093.0
-        },
-        "ML.PA": {
-            "quantity": 9761,
-            "avg_short_price": 30.359999999999996
-        },
-        "RAND.AS": {
-            "quantity": 7290,
-            "avg_short_price": 41.65
-        },
-        "UNA.AS": {
-            "quantity": 5695,
-            "avg_short_price": 56.93997892888498
-        },
-        "KPN.AS": {
-            "quantity": 79671,
-            "avg_short_price": 3.6779999999999995
-        },
-        "HEIA.AS": {
-            "quantity": 2164,
-            "avg_short_price": 70.28
-        },
-        "SOLB.BR": {
-            "quantity": 4634,
-            "avg_short_price": 32.64
-        },
-        "KBC.BR": {
-            "quantity": 2165,
-            "avg_short_price": 68.04
-        },
-        "UCB.BR": {
-            "quantity": 875,
-            "avg_short_price": 185.85
-        },
-        "PROX.BR": {
-            "quantity": 24689,
-            "avg_short_price": 6.08
-        }
-    },
-    "trade_history": [
+    "trades": [
         {
-            "timestamp": "2024-12-02T09:48:24.032664",
-            "symbol": "AIR.PA",
             "type": "buy",
-            "quantity": 1030,
-            "price": 147.58,
-            "value": 152007.40000000002,
-            "fee": 380.0185000000001
+            "ticker": "MSFT",
+            "quantity": 1804.23,
+            "price": 415.69000244140625,
+            "date": "2024-11-25T15:12:16.146121",
+            "status": "executed",
+            "execution_date": "2024-11-25T14:59:13.739260"
         },
         {
-            "timestamp": "2024-12-02T09:48:26.111518",
-            "symbol": "ATO.PA",
             "type": "buy",
-            "quantity": 137509,
-            "price": 0.865,
-            "value": 118945.285,
-            "fee": 297.36321250000003
+            "ticker": "AAPL",
+            "quantity": 3232.76,
+            "price": 232.0,
+            "date": "2024-11-25T15:16:11.561288",
+            "status": "executed",
+            "execution_date": "2024-11-25T14:49:34.136616"
         },
         {
-            "timestamp": "2024-12-02T09:48:26.135444",
-            "symbol": "CS.PA",
             "type": "buy",
-            "quantity": 4700,
-            "price": 32.3,
-            "value": 151810.0,
-            "fee": 379.52500000000003
+            "ticker": "WMT",
+            "quantity": 8359.81,
+            "price": 89.71499633789062,
+            "date": "2024-11-25T14:42:39.508054",
+            "status": "executed",
+            "execution_date": "2024-11-25T14:33:55.240785"
         },
         {
-            "timestamp": "2024-12-02T09:48:26.158007",
-            "symbol": "BNP.PA",
             "type": "buy",
-            "quantity": 2725,
-            "price": 55.7,
-            "value": 151782.5,
-            "fee": 379.45625
+            "ticker": "AMD",
+            "quantity": 5343.02,
+            "price": 140.3699951171875,
+            "date": "2024-11-25T15:29:15.493653",
+            "status": "executed",
+            "execution_date": "2024-11-25T14:48:51.456191"
         },
         {
-            "timestamp": "2024-12-02T09:48:26.195882",
-            "symbol": "CAP.PA",
             "type": "buy",
-            "quantity": 1064,
-            "price": 150.4,
-            "value": 160025.6,
-            "fee": 400.064
+            "ticker": "NVDA",
+            "quantity": 5467.67,
+            "price": 137.1699981689453,
+            "date": "2024-11-25T15:18:59.850451",
+            "status": "executed",
+            "execution_date": "2024-11-25T14:53:56.053420"
         },
         {
-            "timestamp": "2024-12-02T09:48:26.231032",
-            "symbol": "ACA.PA",
             "type": "buy",
-            "quantity": 14172,
-            "price": 12.37,
-            "value": 175307.63999999998,
-            "fee": 438.2691
+            "ticker": "TGT",
+            "quantity": 5768.79,
+            "price": 130.00999450683594,
+            "date": "2024-11-25T14:54:30.137890",
+            "status": "executed",
+            "execution_date": "2024-11-25T15:27:42.243958"
         },
         {
-            "timestamp": "2024-12-02T09:48:28.282138",
-            "symbol": "DSY.PA",
             "type": "buy",
-            "quantity": 4708,
-            "price": 32.32,
-            "value": 152162.56,
-            "fee": 380.4064
+            "ticker": "MSFT",
+            "quantity": 600.93,
+            "price": 413.1214759713465,
+            "date": "2024-11-25T16:51:25.651514",
+            "status": "executed",
+            "execution_date": "2024-11-25T17:06:38.758244"
         },
         {
-            "timestamp": "2024-12-02T09:48:28.318100",
-            "symbol": "EL.PA",
-            "type": "buy",
-            "quantity": 665,
-            "price": 228.5,
-            "value": 151952.5,
-            "fee": 379.88125
+            "type": "sell",
+            "ticker": "MSFT",
+            "quantity": 1460.5029393405412,
+            "price": 419.9371757126852,
+            "date": "2024-11-25T17:37:32.324500",
+            "status": "executed",
+            "execution_date": "2024-11-25T18:17:30.421329"
         },
         {
-            "timestamp": "2024-12-02T09:48:30.376496",
-            "symbol": "KER.PA",
-            "type": "buy",
-            "quantity": 698,
-            "price": 217.4,
-            "value": 151745.2,
-            "fee": 379.36300000000006
+            "type": "sell",
+            "ticker": "MSFT",
+            "quantity": 763.7657526843191,
+            "price": 432.85213165017217,
+            "date": "2024-11-26T20:13:31.932977",
+            "status": "executed",
+            "execution_date": "2024-11-26T19:51:12.556081"
         },
         {
-            "timestamp": "2024-12-02T09:48:30.415474",
-            "symbol": "OR.PA",
             "type": "buy",
-            "quantity": 465,
-            "price": 326.8,
-            "value": 151962.0,
-            "fee": 379.90500000000003
+            "ticker": "MSFT",
+            "quantity": 1325.14,
+            "price": 421.57876750202297,
+            "date": "2024-11-27T18:03:38.308913",
+            "status": "executed",
+            "execution_date": "2024-11-27T17:44:02.256094"
         },
         {
-            "timestamp": "2024-12-02T09:48:30.442020",
-            "symbol": "MC.PA",
-            "type": "buy",
-            "quantity": 257,
-            "price": 589.3,
-            "value": 151450.09999999998,
-            "fee": 378.62524999999994
+            "type": "sell",
+            "ticker": "MSFT",
+            "quantity": 944.2846067258636,
+            "price": 427.1556685774963,
+            "date": "2024-11-27T18:59:02.531993",
+            "status": "executed",
+            "execution_date": "2024-11-27T18:54:34.331347"
         },
         {
-            "timestamp": "2024-12-02T09:48:32.543814",
-            "symbol": "RI.PA",
             "type": "buy",
-            "quantity": 1444,
-            "price": 105.25,
-            "value": 151981.0,
-            "fee": 379.9525
+            "ticker": "MSFT",
+            "quantity": 976.53,
+            "price": 415.46552375866173,
+            "date": "2024-11-29T14:55:32.471583",
+            "status": "executed",
+            "execution_date": "2024-11-29T15:07:52.204443"
         },
         {
-            "timestamp": "2024-12-02T09:48:32.575193",
-            "symbol": "PUB.PA",
             "type": "buy",
-            "quantity": 1484,
-            "price": 102.4,
-            "value": 151961.6,
-            "fee": 379.904
+            "ticker": "AAPL",
+            "quantity": 1215.3,
+            "price": 227.07904458014767,
+            "date": "2024-11-25T16:48:43.854868",
+            "status": "executed",
+            "execution_date": "2024-11-25T17:21:27.405077"
         },
         {
-            "timestamp": "2024-12-02T09:48:32.621781",
-            "symbol": "SAF.PA",
-            "type": "buy",
-            "quantity": 695,
-            "price": 218.7,
-            "value": 151996.5,
-            "fee": 379.99125
+            "type": "sell",
+            "ticker": "AAPL",
+            "quantity": 2823.3017725658956,
+            "price": 236.98230730601392,
+            "date": "2024-11-26T16:19:23.548242",
+            "status": "executed",
+            "execution_date": "2024-11-26T15:36:44.026818"
         },
         {
-            "timestamp": "2024-12-02T09:48:32.651290",
-            "symbol": "SGO.PA",
-            "type": "buy",
-            "quantity": 1787,
-            "price": 85.14,
-            "value": 152145.18,
-            "fee": 380.36295
+            "type": "sell",
+            "ticker": "AAPL",
+            "quantity": 996.1420431392467,
+            "price": 237.5599994998646,
+            "date": "2024-11-27T14:39:02.233052",
+            "status": "executed",
+            "execution_date": "2024-11-27T15:21:14.050774"
         },
         {
-            "timestamp": "2024-12-02T09:48:32.680887",
-            "symbol": "SAN.PA",
             "type": "buy",
-            "quantity": 1868,
-            "price": 91.44,
-            "value": 170809.91999999998,
-            "fee": 427.02479999999997
+            "ticker": "AAPL",
+            "quantity": 2033.79,
+            "price": 232.42963795845696,
+            "date": "2024-11-27T16:30:17.015049",
+            "status": "executed",
+            "execution_date": "2024-11-27T16:59:40.668911"
         },
         {
-            "timestamp": "2024-12-02T09:48:32.709356",
-            "symbol": "SU.PA",
-            "type": "buy",
-            "quantity": 632,
-            "price": 240.25,
-            "value": 151838.0,
-            "fee": 379.595
+            "type": "sell",
+            "ticker": "AAPL",
+            "quantity": 2417.1642840492323,
+            "price": 243.84261041007278,
+            "date": "2024-12-02T14:34:42.886438",
+            "status": "executed",
+            "execution_date": "2024-12-02T14:53:15.211858"
         },
         {
-            "timestamp": "2024-12-02T09:48:32.736866",
-            "symbol": "TEP.PA",
             "type": "buy",
-            "quantity": 1699,
-            "price": 88.88,
-            "value": 151007.12,
-            "fee": 377.5178
+            "ticker": "AAPL",
+            "quantity": 2817.49,
+            "price": 237.4664250255179,
+            "date": "2024-12-02T18:50:24.960717",
+            "status": "executed",
+            "execution_date": "2024-12-02T19:26:39.061207"
         },
         {
-            "timestamp": "2024-12-02T09:48:32.765415",
-            "symbol": "HO.PA",
-            "type": "buy",
-            "quantity": 1081,
-            "price": 140.7,
-            "value": 152096.69999999998,
-            "fee": 380.24174999999997
+            "type": "sell",
+            "ticker": "WMT",
+            "quantity": 8055.29362540898,
+            "price": 90.8056236762186,
+            "date": "2024-11-25T18:18:37.825170",
+            "status": "executed",
+            "execution_date": "2024-11-25T18:15:47.085957"
         },
         {
-            "timestamp": "2024-12-02T09:48:32.795805",
-            "symbol": "VIE.PA",
             "type": "buy",
-            "quantity": 6161,
-            "price": 27.19,
-            "value": 167517.59,
-            "fee": 418.793975
+            "ticker": "WMT",
+            "quantity": 5157.56,
+            "price": 88.77232378345592,
+            "date": "2024-11-25T19:32:08.850044",
+            "status": "executed",
+            "execution_date": "2024-11-25T20:25:32.095994"
         },
         {
-            "timestamp": "2024-12-02T09:48:32.825729",
-            "symbol": "DG.PA",
-            "type": "buy",
-            "quantity": 1785,
-            "price": 97.56,
-            "value": 174144.6,
-            "fee": 435.36150000000004
+            "type": "sell",
+            "ticker": "WMT",
+            "quantity": 3549.8597540278324,
+            "price": 92.72771124570275,
+            "date": "2024-11-26T19:09:11.234017",
+            "status": "executed",
+            "execution_date": "2024-11-26T19:17:57.443507"
         },
         {
-            "timestamp": "2024-12-02T09:48:32.881829",
-            "symbol": "ASML.AS",
             "type": "buy",
-            "quantity": 227,
-            "price": 649.5,
-            "value": 147436.5,
-            "fee": 368.59125
+            "ticker": "WMT",
+            "quantity": 4640.13,
+            "price": 90.11016509585787,
+            "date": "2024-11-26T20:32:46.136235",
+            "status": "executed",
+            "execution_date": "2024-11-26T20:52:27.835478"
         },
         {
-            "timestamp": "2024-12-02T09:48:37.061141",
-            "symbol": "INGA.AS",
-            "type": "buy",
-            "quantity": 10471,
-            "price": 14.524,
-            "value": 152080.804,
-            "fee": 380.20201000000003
+            "type": "sell",
+            "ticker": "WMT",
+            "quantity": 5248.0287876719985,
+            "price": 93.02729699269419,
+            "date": "2024-11-27T16:31:44.635278",
+            "status": "executed",
+            "execution_date": "2024-11-27T17:18:37.682819"
         },
         {
-            "timestamp": "2024-12-02T09:48:49.920067",
-            "symbol": "COLR.BR",
             "type": "buy",
-            "quantity": 3405,
-            "price": 42.9,
-            "value": 146074.5,
-            "fee": 365.18625000000003
+            "ticker": "WMT",
+            "quantity": 6761.05,
+            "price": 90.48853873980845,
+            "date": "2024-11-27T19:49:20.476556",
+            "status": "executed",
+            "execution_date": "2024-11-27T20:02:17.056747"
         },
         {
-            "timestamp": "2024-12-02T09:49:26.269762",
-            "symbol": "AIR.PA",
-            "type": "buy",
-            "quantity": 1029,
-            "price": 147.58,
-            "value": 151859.82,
-            "fee": 379.64955000000003
+            "type": "sell",
+            "ticker": "WMT",
+            "quantity": 6769.576333131841,
+            "price": 93.398999003362,
+            "date": "2024-12-02T15:05:20.084219",
+            "status": "executed",
+            "execution_date": "2024-12-02T14:52:12.174140"
         },
         {
-            "timestamp": "2024-12-02T09:49:28.527109",
-            "symbol": "ATO.PA",
             "type": "buy",
-            "quantity": 137360,
-            "price": 0.865,
-            "value": 118816.4,
-            "fee": 297.041
+            "ticker": "WMT",
+            "quantity": 7712.07,
+            "price": 90.84520615006437,
+            "date": "2024-12-02T17:08:59.633787",
+            "status": "executed",
+            "execution_date": "2024-12-02T16:45:51.135171"
         },
         {
-            "timestamp": "2024-12-02T09:49:28.603229",
-            "symbol": "CS.PA",
-            "type": "buy",
-            "quantity": 4695,
-            "price": 32.3,
-            "value": 151648.5,
-            "fee": 379.12125000000003
+            "type": "sell",
+            "ticker": "WMT",
+            "quantity": 8822.496759396172,
+            "price": 94.01293364224013,
+            "date": "2024-12-02T19:10:54.892344",
+            "status": "executed",
+            "execution_date": "2024-12-02T19:17:50.036071"
         },
         {
-            "timestamp": "2024-12-02T09:49:28.681059",
-            "symbol": "BNP.PA",
-            "type": "buy",
-            "quantity": 2722,
-            "price": 55.7,
-            "value": 151615.4,
-            "fee": 379.0385
+            "type": "sell",
+            "ticker": "AMD",
+            "quantity": 3667.137231071636,
+            "price": 142.07908184989677,
+            "date": "2024-11-25T20:36:47.616665",
+            "status": "executed",
+            "execution_date": "2024-11-25T21:01:37.708770"
         },
         {
-            "timestamp": "2024-12-02T09:49:28.810381",
-            "symbol": "CAP.PA",
             "type": "buy",
-            "quantity": 1063,
-            "price": 150.0,
-            "value": 159450.0,
-            "fee": 398.625
+            "ticker": "AMD",
+            "quantity": 4941.94,
+            "price": 135.9995263415662,
+            "date": "2024-11-26T18:33:23.289063",
+            "status": "executed",
+            "execution_date": "2024-11-26T19:24:45.423378"
         },
         {
-            "timestamp": "2024-12-02T09:49:28.949149",
-            "symbol": "ACA.PA",
-            "type": "buy",
-            "quantity": 14157,
-            "price": 12.37,
-            "value": 175122.09,
-            "fee": 437.805225
+            "type": "sell",
+            "ticker": "AMD",
+            "quantity": 5913.510931342097,
+            "price": 139.02115650911128,
+            "date": "2024-11-26T20:48:12.659428",
+            "status": "executed",
+            "execution_date": "2024-11-26T21:24:04.220061"
         },
         {
-            "timestamp": "2024-12-02T09:49:31.114091",
-            "symbol": "DSY.PA",
             "type": "buy",
-            "quantity": 4703,
-            "price": 32.32,
-            "value": 152000.96,
-            "fee": 380.00239999999997
+            "ticker": "AMD",
+            "quantity": 7429.29,
+            "price": 131.67754377487861,
+            "date": "2024-11-27T16:22:31.355608",
+            "status": "executed",
+            "execution_date": "2024-11-27T16:21:45.044374"
         },
         {
-            "timestamp": "2024-12-02T09:49:31.242788",
-            "symbol": "EL.PA",
             "type": "buy",
-            "quantity": 664,
-            "price": 228.8,
-            "value": 151923.2,
-            "fee": 379.80800000000005
+            "ticker": "AMD",
+            "quantity": 3113.26,
+            "price": 135.62506512445876,
+            "date": "2024-11-29T16:59:12.339449",
+            "status": "executed",
+            "execution_date": "2024-11-29T16:56:18.527361"
         },
         {
-            "timestamp": "2024-12-02T09:49:33.404305",
-            "symbol": "KER.PA",
-            "type": "buy",
-            "quantity": 697,
-            "price": 217.4,
-            "value": 151527.80000000002,
-            "fee": 378.81950000000006
+            "type": "sell",
+            "ticker": "AMD",
+            "quantity": 10265.965623469483,
+            "price": 142.94639823151095,
+            "date": "2024-12-02T16:33:55.689516",
+            "status": "executed",
+            "execution_date": "2024-12-02T17:01:15.910787"
         },
         {
-            "timestamp": "2024-12-02T09:49:33.535384",
-            "symbol": "OR.PA",
             "type": "buy",
-            "quantity": 465,
-            "price": 326.8,
-            "value": 151962.0,
-            "fee": 379.90500000000003
+            "ticker": "AMD",
+            "quantity": 7893.55,
+            "price": 139.491461028912,
+            "date": "2024-12-02T18:40:26.416281",
+            "status": "executed",
+            "execution_date": "2024-12-02T19:22:29.547134"
         },
         {
-            "timestamp": "2024-12-02T09:49:33.618362",
-            "symbol": "MC.PA",
             "type": "buy",
-            "quantity": 257,
-            "price": 589.3,
-            "value": 151450.09999999998,
-            "fee": 378.62524999999994
+            "ticker": "NVDA",
+            "quantity": 2682.86,
+            "price": 134.6626753768935,
+            "date": "2024-11-25T21:19:48.581940",
+            "status": "executed",
+            "execution_date": "2024-11-25T21:28:32.141085"
         },
         {
-            "timestamp": "2024-12-02T09:49:35.853148",
-            "symbol": "RI.PA",
-            "type": "buy",
-            "quantity": 1442,
-            "price": 105.25,
-            "value": 151770.5,
-            "fee": 379.42625
+            "type": "sell",
+            "ticker": "NVDA",
+            "quantity": 6179.779811238819,
+            "price": 138.77217175476383,
+            "date": "2024-11-26T14:56:40.031012",
+            "status": "executed",
+            "execution_date": "2024-11-26T15:29:41.379397"
         },
         {
-            "timestamp": "2024-12-02T09:49:35.931839",
-            "symbol": "PUB.PA",
             "type": "buy",
-            "quantity": 1483,
-            "price": 102.4,
-            "value": 151859.2,
-            "fee": 379.648
+            "ticker": "NVDA",
+            "quantity": 4365.51,
+            "price": 134.10589070014888,
+            "date": "2024-11-26T19:29:19.417916",
+            "status": "executed",
+            "execution_date": "2024-11-26T19:17:33.277072"
         },
         {
-            "timestamp": "2024-12-02T09:49:36.077572",
-            "symbol": "SAF.PA",
-            "type": "buy",
-            "quantity": 695,
-            "price": 218.7,
-            "value": 151996.5,
-            "fee": 379.99125
+            "type": "sell",
+            "ticker": "NVDA",
+            "quantity": 4281.715051614425,
+            "price": 137.96349711425947,
+            "date": "2024-11-26T19:50:44.539778",
+            "status": "executed",
+            "execution_date": "2024-11-26T19:46:42.362222"
         },
         {
-            "timestamp": "2024-12-02T09:49:36.159181",
-            "symbol": "SGO.PA",
             "type": "buy",
-            "quantity": 1785,
-            "price": 84.96,
-            "value": 151653.59999999998,
-            "fee": 379.13399999999996
+            "ticker": "NVDA",
+            "quantity": 4677.72,
+            "price": 130.51765371346428,
+            "date": "2024-11-27T14:55:03.162517",
+            "status": "executed",
+            "execution_date": "2024-11-27T14:37:06.846092"
         },
         {
-            "timestamp": "2024-12-02T09:49:36.242260",
-            "symbol": "SAN.PA",
-            "type": "buy",
-            "quantity": 1866,
-            "price": 91.44,
-            "value": 170627.04,
-            "fee": 426.5676
+            "type": "sell",
+            "ticker": "NVDA",
+            "quantity": 4753.7167252598465,
+            "price": 141.01996205806185,
+            "date": "2024-12-02T14:59:52.350102",
+            "status": "executed",
+            "execution_date": "2024-12-02T15:21:01.664206"
         },
         {
-            "timestamp": "2024-12-02T09:49:36.323224",
-            "symbol": "SU.PA",
             "type": "buy",
-            "quantity": 631,
-            "price": 240.25,
-            "value": 151597.75,
-            "fee": 378.994375
+            "ticker": "NVDA",
+            "quantity": 6199.31,
+            "price": 136.54749191359923,
+            "date": "2024-12-02T18:54:08.586151",
+            "status": "executed",
+            "execution_date": "2024-12-02T18:52:24.985168"
         },
         {
-            "timestamp": "2024-12-02T09:49:36.397105",
-            "symbol": "TEP.PA",
             "type": "buy",
-            "quantity": 1697,
-            "price": 88.88,
-            "value": 150829.36,
-            "fee": 377.0734
+            "ticker": "TGT",
+            "quantity": 2375.3,
+            "price": 125.65457656484269,
+            "date": "2024-11-26T17:09:23.454770",
+            "status": "executed",
+            "execution_date": "2024-11-26T17:15:24.609927"
         },
         {
-            "timestamp": "2024-12-02T09:49:36.468308",
-            "symbol": "HO.PA",
-            "type": "buy",
-            "quantity": 1079,
-            "price": 140.7,
-            "value": 151815.3,
-            "fee": 379.53825
+            "type": "sell",
+            "ticker": "TGT",
+            "quantity": 6767.019377608015,
+            "price": 128.07390783144348,
+            "date": "2024-11-26T19:15:24.418934",
+            "status": "executed",
+            "execution_date": "2024-11-26T19:23:43.278864"
         },
         {
-            "timestamp": "2024-12-02T09:49:36.542195",
-            "symbol": "VIE.PA",
             "type": "buy",
-            "quantity": 6155,
-            "price": 27.19,
-            "value": 167354.45,
-            "fee": 418.38612500000005
+            "ticker": "TGT",
+            "quantity": 5148.24,
+            "price": 125.15654658649838,
+            "date": "2024-11-26T21:04:38.752581",
+            "status": "executed",
+            "execution_date": "2024-11-26T21:06:09.127547"
         },
         {
-            "timestamp": "2024-12-02T09:49:36.637354",
-            "symbol": "DG.PA",
             "type": "buy",
-            "quantity": 1783,
-            "price": 97.82,
-            "value": 174413.06,
-            "fee": 436.03265
+            "ticker": "TGT",
+            "quantity": 2461.17,
+            "price": 128.59162722420635,
+            "date": "2024-11-27T20:33:32.106571",
+            "status": "executed",
+            "execution_date": "2024-11-27T21:01:10.705067"
         },
         {
-            "timestamp": "2024-12-02T09:49:36.813810",
-            "symbol": "ASML.AS",
-            "type": "buy",
-            "quantity": 227,
-            "price": 649.5,
-            "value": 147436.5,
-            "fee": 368.59125
+            "type": "sell",
+            "ticker": "TGT",
+            "quantity": 7083.827067244165,
+            "price": 133.1185112276185,
+            "date": "2024-11-29T16:53:47.338384",
+            "status": "executed",
+            "execution_date": "2024-11-29T17:11:29.754524"
         },
         {
-            "timestamp": "2024-12-02T09:49:41.137137",
-            "symbol": "INGA.AS",
             "type": "buy",
-            "quantity": 10460,
-            "price": 14.524,
-            "value": 151921.03999999998,
-            "fee": 379.8025999999999
+            "ticker": "TGT",
+            "quantity": 5554.71,
+            "price": 127.6508329333628,
+            "date": "2024-12-02T15:02:22.191188",
+            "status": "executed",
+            "execution_date": "2024-12-02T14:36:31.396005"
+        },
+        {
+            "type": "buy",
+            "ticker": "GOOGL",
+            "quantity": 1944.9,
+            "price": 164.61326881818061,
+            "date": "2024-11-25T16:43:31.251941",
+            "status": "executed",
+            "execution_date": "2024-11-25T16:41:17.409157"
+        },
+        {
+            "type": "sell",
+            "ticker": "GOOGL",
+            "quantity": 1345.162321109483,
+            "price": 171.02371249753375,
+            "date": "2024-11-26T20:06:41.516340",
+            "status": "executed",
+            "execution_date": "2024-11-26T20:05:24.917797"
+        },
+        {
+            "type": "buy",
+            "ticker": "GOOGL",
+            "quantity": 1441.12,
+            "price": 166.98996017855424,
+            "date": "2024-11-27T17:26:27.440817",
+            "status": "executed",
+            "execution_date": "2024-11-27T16:35:53.325166"
+        },
+        {
+            "type": "sell",
+            "ticker": "GOOGL",
+            "quantity": 1342.050124158946,
+            "price": 171.6414103857192,
+            "date": "2024-11-27T18:16:57.006228",
+            "status": "executed",
+            "execution_date": "2024-11-27T18:05:16.804895"
+        },
+        {
+            "type": "sell",
+            "ticker": "GOOGL",
+            "quantity": 612.9440361428682,
+            "price": 171.08818852608997,
+            "date": "2024-11-27T21:00:16.257523",
+            "status": "executed",
+            "execution_date": "2024-11-27T20:37:44.885468"
+        },
+        {
+            "type": "buy",
+            "ticker": "GOOGL",
+            "quantity": 1891.38,
+            "price": 166.97263241746498,
+            "date": "2024-11-29T15:25:49.819110",
+            "status": "executed",
+            "execution_date": "2024-11-29T15:22:05.638215"
+        },
+        {
+            "type": "sell",
+            "ticker": "GOOGL",
+            "quantity": 1635.3623579035088,
+            "price": 173.04496259050066,
+            "date": "2024-12-02T17:09:48.668597",
+            "status": "executed",
+            "execution_date": "2024-12-02T16:34:11.594892"
+        },
+        {
+            "type": "buy",
+            "ticker": "COST",
+            "quantity": 311.17,
+            "price": 944.9558906453747,
+            "date": "2024-11-25T16:59:24.641090",
+            "status": "executed",
+            "execution_date": "2024-11-25T17:13:25.566289"
+        },
+        {
+            "type": "sell",
+            "ticker": "COST",
+            "quantity": 254.66578753192795,
+            "price": 960.9430936843215,
+            "date": "2024-11-25T18:01:53.537425",
+            "status": "executed",
+            "execution_date": "2024-11-25T18:09:21.044973"
+        },
+        {
+            "type": "sell",
+            "ticker": "COST",
+            "quantity": 42.30333620767649,
+            "price": 975.4719889469441,
+            "date": "2024-11-26T18:08:00.175403",
+            "status": "executed",
+            "execution_date": "2024-11-26T17:36:30.488310"
+        },
+        {
+            "type": "sell",
+            "ticker": "COST",
+            "quantity": 9.56389674761331,
+            "price": 982.6841821855463,
+            "date": "2024-11-26T20:51:35.576658",
+            "status": "executed",
+            "execution_date": "2024-11-26T21:26:02.544485"
+        },
+        {
+            "type": "sell",
+            "ticker": "COST",
+            "quantity": 3.2638670489980757,
+            "price": 986.1747689252326,
+            "date": "2024-12-02T14:49:29.431420",
+            "status": "executed",
+            "execution_date": "2024-12-02T15:17:36.862618"
         }
     ]
 }

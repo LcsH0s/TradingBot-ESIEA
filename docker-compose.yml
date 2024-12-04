@@ -1,0 +1,9 @@
+services:
+  trading-bot:
+    build: .
+    volumes:
+      - ./wallet.json:/app/wallet.json
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
