@@ -47,10 +47,10 @@ def load_config() -> dict:
 def format_money(value: float) -> str:
     """Format money values with colors based on positive/negative"""
     if value > 0:
-        return f"\033[92m${value:,.2f}\033[0m"  # Green for positive
+        return f"\033[92m€{value:,.2f}\033[0m"  # Green for positive
     elif value < 0:
-        return f"\033[91m${value:,.2f}\033[0m"  # Red for negative
-    return f"${value:,.2f}"
+        return f"\033[91m€{value:,.2f}\033[0m"  # Red for negative
+    return f"€{value:,.2f}"
 
 def generate_report(wallet: Wallet, logger: logging.Logger) -> None:
     """Generate and display a detailed trading report"""
@@ -93,8 +93,15 @@ def generate_report(wallet: Wallet, logger: logging.Logger) -> None:
     # Print summary metrics
     print(f"Current Portfolio Value: {format_money(total_portfolio_value)}")
     print(f"Total Performance (%): {'+' if total_performance_pct >= 0 else ''}{total_performance_pct:.2f}%")
-    print(f"Total Performance ($): {format_money(total_performance_dollars)}")
+    print(f"Total Performance (€): {format_money(total_performance_dollars)}")
     print(f"\nCurrent Balance: {format_money(balance)}")
+
+    # Calculate simulated full sale value
+    total_sale_fees = total_position_value * FEE_RATE if total_position_value > 0 else 0
+    simulated_total_after_sale = total_portfolio_value - total_sale_fees
+
+    print(f"\nSimulated Portfolio Value After Full Sale:")
+    print(f"Total: {format_money(simulated_total_after_sale)} (including {format_money(total_sale_fees)} in selling fees)")
     
     # Current Positions Table
     if positions:
@@ -122,16 +129,16 @@ def generate_report(wallet: Wallet, logger: logging.Logger) -> None:
             positions_table.append([
                 ticker,
                 position.quantity,
-                f"${position.avg_price:.2f}",
-                f"${current_price:.2f}",
-                f"${position_value:.2f}",
-                f"${unrealized_pnl:.2f}",
+                f"€{position.avg_price:.2f}",
+                f"€{current_price:.2f}",
+                f"€{position_value:.2f}",
+                f"€{unrealized_pnl:.2f}",
                 f"{total_return:.2f}%"
             ])
         
         print(tabulate(
             positions_table,
-            headers=['Ticker', 'Quantity', 'Avg Price', 'Current Price', 'Position Value', 'Unrealized P/L', 'Return'],
+            headers=['Ticker', 'Quantity', 'Avg Price (€)', 'Current Price (€)', 'Position Value (€)', 'Unrealized P/L (€)', 'Return'],
             tablefmt='grid'
         ))
     
@@ -141,19 +148,67 @@ def generate_report(wallet: Wallet, logger: logging.Logger) -> None:
         trades_table = []
         total_fees = 0
         
+        # Calculate profit/loss for completed trade pairs
+        trade_profits = []
+        buy_trades = {}
+        
         for trade in trades:
             if trade.status == "executed":
                 trade_value = trade.price * trade.quantity
                 trade_fees = trade_value * FEE_RATE
                 total_fees += trade_fees
                 
+                if trade.type == "buy":
+                    # Store buy trade info
+                    if trade.ticker not in buy_trades:
+                        buy_trades[trade.ticker] = []
+                    buy_trades[trade.ticker].append({
+                        'quantity': trade.quantity,
+                        'price': trade.price,
+                        'fees': trade_fees,
+                        'date': trade.execution_date
+                    })
+                elif trade.type == "sell" and trade.ticker in buy_trades:
+                    # Match with corresponding buy trade(s)
+                    remaining_sell_quantity = trade.quantity
+                    sell_value = trade.price * trade.quantity
+                    sell_fees = trade_value * FEE_RATE
+                    
+                    while remaining_sell_quantity > 0 and buy_trades[trade.ticker]:
+                        buy_trade = buy_trades[trade.ticker][0]
+                        matched_quantity = min(remaining_sell_quantity, buy_trade['quantity'])
+                        
+                        # Calculate profit for this matched portion
+                        buy_cost = matched_quantity * buy_trade['price']
+                        sell_revenue = matched_quantity * trade.price
+                        
+                        # Proportional fees
+                        matched_buy_fees = (matched_quantity / buy_trade['quantity']) * buy_trade['fees']
+                        matched_sell_fees = (matched_quantity / trade.quantity) * sell_fees
+                        
+                        profit = sell_revenue - buy_cost - matched_buy_fees - matched_sell_fees
+                        
+                        trade_profits.append({
+                            'ticker': trade.ticker,
+                            'profit': profit,
+                            'buy_date': buy_trade['date'],
+                            'sell_date': trade.execution_date,
+                            'quantity': matched_quantity
+                        })
+                        
+                        remaining_sell_quantity -= matched_quantity
+                        buy_trade['quantity'] -= matched_quantity
+                        
+                        if buy_trade['quantity'] <= 0:
+                            buy_trades[trade.ticker].pop(0)
+                
                 trades_table.append([
                     trade.ticker,
                     trade.type.upper(),
                     trade.quantity,
-                    f"${trade.price:.2f}",
-                    f"${trade_value:.2f}",
-                    f"${trade_fees:.2f}",
+                    f"€{trade.price:.2f}",
+                    f"€{trade_value:.2f}",
+                    f"€{trade_fees:.2f}",
                     trade.execution_date
                 ])
         
@@ -162,7 +217,26 @@ def generate_report(wallet: Wallet, logger: logging.Logger) -> None:
             headers=['Ticker', 'Type', 'Quantity', 'Price', 'Value', 'Fees', 'Execution Date'],
             tablefmt='grid'
         ))
-        print(f"\nTotal Trading Fees: ${total_fees:,.2f}")
+        print(f"\nTotal Trading Fees: €{total_fees:,.2f}")
+        
+        # Display top 5 most profitable trades
+        if trade_profits:
+            print("\nTop 5 Most Profitable Trades:")
+            top_trades = sorted(trade_profits, key=lambda x: x['profit'], reverse=True)[:5]
+            top_trades_table = [
+                [
+                    trade['ticker'],
+                    trade['quantity'],
+                    format_money(trade['profit']),
+                    trade['buy_date'],
+                    trade['sell_date']
+                ] for trade in top_trades
+            ]
+            print(tabulate(
+                top_trades_table,
+                headers=['Ticker', 'Quantity', 'Profit', 'Buy Date', 'Sell Date'],
+                tablefmt='grid'
+            ))
     else:
         print("\nNo trades executed yet")
     
@@ -177,7 +251,7 @@ def export_to_excel(wallet: Wallet, output_file: Optional[str] = None, logger: l
     
     # Export Summary
     summary_data = {
-        'Metric': ['Initial Balance', 'Current Balance', 'Total Position Value', 'Total Portfolio Value', 'Total Performance ($)', 'Total Performance (%)'],
+        'Metric': ['Initial Balance', 'Current Balance', 'Total Position Value', 'Total Portfolio Value', 'Total Performance (€)', 'Total Performance (%)'],
         'Value': []
     }
     
